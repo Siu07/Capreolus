@@ -360,56 +360,42 @@ void prg(){    //to exit program set step to 8 and call "prg();"
   }
   else {
     switch (programme) {
-    case 1:
-      { // Programme One - Snack Salami
+    case 1: // Programme One - Snack Salami
         prgMin = 0;
         prgHour = prgOne[prgStep];
         RH = prgOneRH[prgStep];
         Temp = prgOneTemp[prgStep];
         break;
-      }
-    case 2:
-      { // Programme Two - Saucisson Sec
+    case 2: // Programme Two - Saucisson Sec
         prgMin = 0;
         prgHour = prgTwo[prgStep];
         RH = prgTwoRH[prgStep];
         Temp = prgTwoTemp[prgStep];
         break;
-      }
-    case 3:
-      { // Programme three - Bacon
+    case 3: // Programme three - Bacon
         prgMin = 0;
         prgHour = prgThree[prgStep];
         RH = prgThreeRH[prgStep];
         Temp = prgThreeTemp[prgStep];
         break;
-      }
-    case 4:
-      { // Programme Four - Large Meat
+    case 4: // Programme Four - Large Meat
         prgMin = 0;
         prgHour = prgFour[prgStep];
         RH = prgFourRH[prgStep];
         Temp = prgFourTemp[prgStep];
         break;
-      }
-    case 5:
-      { // Programme Five - Calibration
+    case 5: // Programme Five - Calibration
         prgHour = 0;
         prgMin = prgFive[prgStep];
         RH = prgFiveRH[prgStep];
         Temp = prgFiveTemp[prgStep];
         break;
-      }
     case 6:
-      {
         //will contain code for user to input changes to programs
         break;
-      }
-    default:
-      {  //error handling
+    default:  //error handling
         return;
         break;
-      }
     }
     prgStep++;
     EEPROM.write(121, prgStep);
@@ -500,31 +486,21 @@ void printscr()
     lcd.print(RH);//doubleMap(huSetpoint, 204.6, 1023, 0, 100),2);
     lcd.setCursor(5, 2);
     switch (programme) {
-    case 1:
-      { // Programme One - Snack Salami
+    case 1: // Programme One - Snack Salami
         lcd.print("Snack Salami");
         break;
-      }
-    case 2:
-      { // Programme Two - Saucison Sec
+    case 2: // Programme Two - Saucison Sec
         lcd.print("Saucisson Sec");
         break;
-      }
-    case 3:
-      { // Programme three - Bacon
+    case 3: // Programme three - Bacon
         lcd.print("Bacon");
         break;
-      }
-    case 4:
-      { // Programme Four - Large Meat
+    case 4: // Programme Four - Large Meat
         lcd.print("Large Meat");
         break;
-      }
-    case 5:
-      { // Programme Five - Calibration
+    case 5: // Programme Five - Calibration
         lcd.print("Calibration");
         break;
-      }
     }
   }
   else {
@@ -566,36 +542,24 @@ void printscr()
         lcd.print("                    ");
         lcd.setCursor(0, 2);
         switch (encoderValue) {
-        case 1:
-          { // Programme One - Snack Salami
+        case 1: // Programme One - Snack Salami
             lcd.print("Snack Salami");
             break;
-          }
-        case 2:
-          { // Programme Two - Saucison Sec
+        case 2: // Programme Two - Saucison Sec
             lcd.print("Saucisson Sec");
             break;
-          }
-        case 3:
-          { // Programme three - Bacon
+        case 3: // Programme three - Bacon
             lcd.print("Bacon");
             break;
-          }
-        case 4:
-          { // Programme Four - Large Meat
+        case 4: // Programme Four - Large Meat
             lcd.print("Large Meat");
             break;
-          }
-        case 5:
-          { // Programme Five - Calibration
+        case 5: // Programme Five - Calibration
             lcd.print("Calibration");
             break;
-          }
-        case 6:
-          {  // Edit programs
+        case 6:  // Edit programs
             lcd.print("Edit Programs");
             break;
-          }
         }
       }
     }

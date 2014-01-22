@@ -1,5 +1,5 @@
 //22/01/13
-//Version 0.0.1
+//Version 0.0.2
 #include <MenuBackend.h>
 #include <LiquidCrystal.h>
 
@@ -32,7 +32,7 @@ MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
 void menuSetup()
 {
   menu.getRoot().add(selectPrg);
-    selectPrg.addRight(prg);
+    selectPrg.addRight(prgMenu);
       prgMenu.addRight(runPrg);
       prgMenu.addRight(editPrg);
       prgMenu.addRight(delPrg);
@@ -40,7 +40,7 @@ void menuSetup()
         runPrg.addAfter(editPrg);
         editPrg.addAfter(delPrg);
           editPrg.addRight(prgName);
-            prgName.addRight(prgStep);
+            prgName.addRight(prgMenuStep);
              prgMenuStep.addRight(prgSet);
         delPrg.addAfter(runPrg);
         delPrg.addRight(delPrgConf);
@@ -85,41 +85,31 @@ void menuUseEvent(MenuUseEvent used)    //This is where you define a behaviour f
       if (programme>5) programme=1;    //Change to varible based on number of programs created
       Serial.print("Select Program: ");
       switch (programme) {
-      case 1:
-        { // Programme One - Snack Salami
+      case 1: // Programme One - Snack Salami
           lcd.print("Snack Salami");
           Serial.print(programme);
           Serial.println(" Snack Salami");
           break;
-        }
-      case 2:
-        { // Programme Two - Saucison Sec
+      case 2: // Programme Two - Saucison Sec
           lcd.print("Saucisson Sec");
           Serial.print(programme);
           Serial.println(" Saucisson Sec");
           break;
-        }
-      case 3:
-        { // Programme three - Bacon
+      case 3: // Programme three - Bacon
           lcd.print("Bacon");
           Serial.print(programme);
           Serial.println(" Bacon");
           break;
-        }
-      case 4:
-        { // Programme Four - Large Meat
+      case 4: // Programme Four - Large Meat
           lcd.print("Large Meat");
           Serial.print(programme);
           Serial.println(" Large Meat");
           break;
-        }
-      case 5:
-        { // Programme Five - Calibration
+      case 5: // Programme Five - Calibration
           lcd.print("Calibration");
           Serial.print(programme);
           Serial.println(" Calibration");
           break;
-        }
       }
     }
     else{
