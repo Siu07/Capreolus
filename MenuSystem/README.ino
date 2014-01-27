@@ -5,18 +5,32 @@ todo:
  auto turn off backlight                                             Note: add timeout, think about pwm to fade screen out.
  upgrade power supply                                                Note: 1A should be able to keep 12v steady. Need to get 2.1mm socket
  Done 75%: make routines more efficient                              Note: Using TimeAlarms to provide screen updates at regular intervals rather than slow down processing code.
- add real menu                                                       Note: Experiment with M2tklib more. Probably require complete restructure of code.
+ Done 50%: add real menu                                                       Note: Experiment with M2tklib more. Probably require complete restructure of code.
  integrate data logging
  integrate phone support
  only map input reading for display, use unmapped for calculations
- Done 50%: resume on power loss.                                     Note: Rudimentory systems, auto resumes previous program and step on power. No run time continuation, recorded step started from begining.
- add first boot mode to populate EEPROM.
- test "doubleMap" function.
+ Done 75%: resume on power loss.                                     Note: Rudimentory systems, auto resumes previous program and step on power. No run time continuation, recorded step started from begining.
+ Done 50%: add first boot mode to populate EEPROM.
+ Done 100%: test "doubleMap" function.
  Note: Add "first boot" flag (with version number) to repopulate all EEPROM data on update or first run. 
+ Replace fixed number of steps with dynamic array                    Note: creation of new program shall give the following options, enter step value, next step, finish, back. user may keep pressing next step until they have enough steps.
  */
 /*
  EEPROM Memory Allocation:
- 0-119 = programs
+  heKp = 0
+  heKi = 4
+  heKd = 8
+  coKp = 12
+  coKi = 16
+  coKd = 20
+  huKp = 24
+  huKi = 28
+  huKd = 32
+  deKp = 36
+  deKi = 40
+  deKd = 44
+  //Superseeded - below memory locations not true in MenuSystem
+ 0-119 = programs    
  0-23 = program 1
  24-47 = program 2
  48-71 = program 3
@@ -43,20 +57,16 @@ todo:
                               <Previous letter>
                               Confirm
                               Back
-                                      #Steps#
-                                      <Raise number of steps>
-                                      <Lower number of steps>
+                                      #Setpoints#
+                                      <Raise Time>
+                                      <Lower Time>
+                                      <Raise Temperature>
+                                      <Lower Temperature>
+                                      <Raise RH>
+                                      <Lower RH>
+                                      next step            //Turtles all the way down
                                       Confirm
                                       Back
-                                              #Temperature Setpoint#
-                                              #Humidity Setpoint#
-                                              <Raise Temperature Setpoint>
-                                              <Lower Temperature Setpoint>
-                                              <Raise Humidity Setpoint>
-                                              <Lower Humidity Setpoint>
-                                              Next Step
-                                              Back
-                                              Exit
                       Delete Program
                               Delete Confirmation
                               Back

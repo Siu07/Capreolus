@@ -1,18 +1,45 @@
-//24/01/13
-//Version 0.0.3
-#include <MenuBackend.h>
-#include <LiquidCrystal.h>
-#include <PID_v1.h>
-#include <PID_AutoTune_v0.h>
-#include <EEPROMex.h>
+//27/01/13
+//Version 0.0.4
+/* ______     ___      .______   .______    _______   ______    __       __    __       _______.
+  /      |   /   \     |   _  \  |   _  \  |   ____| /  __  \  |  |     |  |  |  |     /       |
+ |  ,----'  /  ^  \    |  |_)  | |  |_)  | |  |__   |  |  |  | |  |     |  |  |  |    |   (----`
+ |  |      /  /_\  \   |   ___/  |      /  |   __|  |  |  |  | |  |     |  |  |  |     \   \    
+ |  `----./  _____  \  |  |      |  |\  \-.|  |____ |  `--'  | |  `----.|  `--'  | .----)   |   
+  \______/__/     \__\ | _|      | _| `.__||_______| \______/  |_______| \______/  |_______/    
+                                                                                                   
+
+      _______  __  .__   __.  _______     _______   ______     ______    _______       _______.
+     |   ____||  | |  \ |  | |   ____|   |   ____| /  __  \   /  __  \  |       \     /       |
+     |  |__   |  | |   \|  | |  |__      |  |__   |  |  |  | |  |  |  | |  .--.  |   |   (----`
+     |   __|  |  | |  . `  | |   __|     |   __|  |  |  |  | |  |  |  | |  |  |  |    \   \    
+     |  |     |  | |  |\   | |  |____    |  |     |  `--'  | |  `--'  | |  '--'  |.----)   |   
+     |__|     |__| |__| \__| |_______|   |__|      \______/   \______/  |_______/ |_______/    */
+                                                                                               
+#include <MenuBackend.h>         //Menu element
+#include <LiquidCrystal.h>       //LCD 20x4
+#include <PID_v1.h>              //
+//#include <PID_AutoTune_v0.h>   Hope to integrate, but not yet.
+#include <EEPROMex.h>            //Saving double varibles to EEPROM
+#include <Time.h>                //Counting from boot time
+#include <TimeAlarms.h>          //Basic multithreading
+#include <Bounce2.h>             //Cleaning User inputs
+#include <math.h>                //mapping numbers between differing scales
 
 //Display
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
-
+//Menu system
 int programme =0, menuFlag = 0, numInput = 0;
-const int memBase          = 350;
-
-//heater                                      Define Default PID parameters            //need to set all to zero and read values from EEPROM
+//EEPROM
+const int memBase = 350;
+//PID
+int RH, Temp;
+int prgStep, prgHour, prgMin;
+double deadband = 0.01; //set the deadband to prevent PID controllers fighting.
+int hours = 0, mins =0, secs = 0;
+int buttonState = 0;
+const int buttonPin = 20;
+long t = 0;
+//heater           Define Default PID parameters            //need to set all to zero and read values from EEPROM
 double heInput, heOutput, heSetpoint;      //suggestions for next attempt      //on boot
 double heKp = 2, heKi = 1, heKd = 5;       //heKp = 2, heKi = 0.05, heKd = 5;
 int windowSize = 10000;
@@ -26,12 +53,41 @@ double huKp = 0.02, huKi = 0.01, huKd = 5;  //huKp = 0.02, huKi = 0.005, huKd = 
 //dehumidifier
 double deInput, deOutput, deSetpoint;
 double deKp = 0.02, deKi = 0.01, deKd = 5;  //deKp = 0.02, deKi = 0.01, deKd = 5;
-
-PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT);    //initilize PIDs
+//Declaration of PID
+PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT);
 PID cooler(&coInput, &coOutput, &coSetpoint, coKp, coKi, coKd, REVERSE);
 PID humidifier(&huInput, &huOutput, &huSetpoint, huKp, huKi, huKd, DIRECT);
 PID dehumidifier(&deInput, &deOutput, &deSetpoint, deKp, deKi, deKd, REVERSE);
-
+//Averageing inputs Temperature
+const int numReadings = 10;
+double readingsTemp[numReadings];      // the readings from the analog input
+int index = 0;                  // the index of the current reading
+double totalTemp = 0;                  // the running total
+double averageTemp = 0;                // the average
+//RH
+double readingsRH[numReadings];      // the readings from the analog input
+double totalRH = 0;                  // the running total
+double averageRH = 0;                // the average
+//IO - Input
+int tempPin = A0;    //Define input pins
+int rhPin = A1;
+//IO - output
+int hePin = 40;     //Define output pins
+int coPin = 8;
+int huPin = 9;
+int dePin = 10;
+//User Input
+int lastDebounceTime = 0;  // the last time the output pin was toggled
+int debounceDelay = 50;    // the debounce time; increase if the output flickers
+int storedPrg = 0;
+int encoderPin1 = 2;
+int encoderPin2 = 3;
+int oldValue = 0;
+volatile int lastEncoded = 0;
+volatile long encoderValue = 0;
+long lastencoderValue = 0;
+int sum = 0;      //encoder sum, terrible name i know
+//Menu  Elements
 MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
   MenuItem selectPrg = MenuItem("Select Program");
     MenuItem prgMenu = MenuItem("Program");
@@ -51,6 +107,41 @@ MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
     MenuItem humid = MenuItem("Humidifier");
     MenuItem dehumid = MenuItem("Dehumidifier");
   MenuItem stat = MenuItem("Status");
+//Programme One - Snack Salami          Eventually, array shall not be confined to 8 steps
+int prgOne[8] = {
+  2, 36, 6, 6, 6, 6, 36, 144}; // Hours
+int prgOneRH[8] = {
+  85, 92, 88, 85, 82, 80, 80, 80}; // Relative Humidity
+int prgOneTemp[8] = {
+  22, 25, 22, 20, 17, 14, 12, 10}; // Temperature
+// Programme Two - Saucison Sec
+int prgTwo[8] = {
+  2, 48, 6, 6, 6, 12, 72, 144}; // Hours
+int prgTwoRH[8] = {
+  85, 92, 88, 85, 82, 80, 80, 80}; // Relative Humidity
+int prgTwoTemp[8] = {
+  22, 25, 22, 20, 17, 14, 12, 10}; // Temperature
+// Programme three - Bacon
+int prgThree[8] = {
+  2, 12, 3, 3, 3, 3, 3, 9}; // Hours
+int prgThreeRH[8] = {
+  85, 92, 88, 85, 82, 80, 80, 80}; // Relative Humidity
+int prgThreeTemp[8] = {
+  22, 25, 22, 20, 17, 14, 12, 10}; // Temperature
+// Programme Four - Large Meat
+int prgFour[8] = {
+  2, 60, 12, 12, 12, 12, 48, 132}; // Hours
+int prgFourRH[8] = {
+  85, 92, 88, 85, 82, 80, 80, 80}; // Relative Humidity
+int prgFourTemp[8] = {
+  22, 25, 22, 20, 17, 14, 12, 10}; // Temperature
+//Calibration Program
+int prgFive[8] = {
+  59, 59, 59, 59, 59, 59, 59, 59}; // Seconds
+int prgFiveRH[] = {
+  80, 80, 80, 80, 80, 80, 80, 80}; // Relative Humidity
+int prgFiveTemp[8] = {
+  20, 20, 20, 20, 20, 20, 20, 20}; // Temperature
 
 void menuSetup()
 {
@@ -107,6 +198,7 @@ void menuSetup()
 
 void setup()
 {
+  setTime(0,0,0,1,1,14);
   Serial.begin(9600);
   lcd.begin(20, 4);
   lcd.setCursor(0, 0);
@@ -114,14 +206,14 @@ void setup()
   Serial.println("Starting navigation:\r\nUp: w   Down: s   Left: a   Right: d   Use: e");
   menu.moveDown();
   
-  EEPROM.setMemPool(memBase, EEPROMSizeUno);
-  
+  EEPROM.setMemPool(memBase, EEPROMSizeMega); //minimum and maximum address to use. To be used with address allocation.
+                                              //Min address should be set to the last manual known entry.
   heater.SetOutputLimits(0, windowSize);
   heater.SetMode(AUTOMATIC); //Should be AUTOMATIC, only manual during testing
   cooler.SetMode(AUTOMATIC);
   humidifier.SetMode(AUTOMATIC);
   dehumidifier.SetMode(AUTOMATIC);
-  
+  windowStartTime = millis();
   //Repopulate PID values from memory. Double occupies 4 bytes. Arduino Due board would require 8.
   heKp = EEPROM.readDouble(0);
   heKi = EEPROM.readDouble(4);
@@ -134,7 +226,29 @@ void setup()
   huKd = EEPROM.readDouble(32);
   deKp = EEPROM.readDouble(36);
   deKi = EEPROM.readDouble(40);
-  deKd = EEPROM.readDouble(44);
+  deKd = EEPROM.readDouble(44); // To be replaced by something like this: double heKp = EEPROM.getAddress(sizeof(double));
+  //User I/O
+  pinMode(buttonPin, INPUT);  //select button (within rotary encoder) interrupt 3
+  pinMode(A0, INPUT);     //Temperature input
+  pinMode(A1, INPUT);     //RH input
+  pinMode(A2, INPUT);     //Calibration Input
+  pinMode(40, OUTPUT);    //Heater output
+  pinMode(8, OUTPUT);     //Cooler Output
+  pinMode(9, OUTPUT);     //Humidifier Output
+  pinMode(10, OUTPUT);    //Dehumidifier Output
+  //Rotary encoder
+  pinMode(encoderPin1, INPUT); 
+  pinMode(encoderPin2, INPUT);
+  digitalWrite(encoderPin1, HIGH); //turn pullup resistor on
+  digitalWrite(encoderPin2, HIGH); //turn pullup resistor on
+  attachInterrupt(0, updateEncoder, CHANGE); 
+  attachInterrupt(1, updateEncoder, CHANGE);
+  for (int thisReading = 0; thisReading < numReadings; thisReading++)  //First Temperature and RH readings
+    readingsTemp[thisReading] = 0;  
+  for (int thisReading = 0; thisReading < numReadings; thisReading++)
+    readingsRH[thisReading] = 0;
+  heSetpoint = 10;    //Set PID to aim for default behavior whilst awaiting programme selection
+  huSetpoint = 80;    //Add to settings as an option rather than hardcode
 }
 
 void loop()
@@ -159,6 +273,8 @@ void loop()
       break;
     }
   }
+  process();
+  Alarm.delay(10);  //non zero to avoid bug with libary
 }
 
 void userInput() {
@@ -413,3 +529,58 @@ void menuChangeEvent(MenuChangeEvent changed) //Notification of menu change
   Serial.print(" to ");
   Serial.println(changed.to.getName());
 }
+
+void updateEncoder(){  //detects and interperates encoder position
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    lastDebounceTime = millis();
+    int MSB = digitalRead(encoderPin1); //MSB = most significant bit
+    int LSB = digitalRead(encoderPin2); //LSB = least significant bit
+    int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
+    sum  = (lastEncoded << 2) | encoded; //adding it to the previous encoded value
+    if(sum == 13 || sum == 7) encoderValue ++;
+    if(sum == 14 || sum == 11) encoderValue --;
+    lastEncoded = encoded; //store this value for next time
+  }
+}
+
+void process() {    //Calculate inputs ready for PID compute and set outputs
+  totalTemp= totalTemp - readingsTemp[index];          
+  readingsTemp[index] = analogRead(tempPin); 
+  totalTemp= totalTemp + readingsTemp[index]; 
+  totalRH= totalRH - readingsRH[index];          
+  readingsRH[index] = analogRead(rhPin); 
+  totalRH= totalRH + readingsRH[index];   
+  index++;                    
+  if (index >= numReadings)              
+    index = 0;                           
+  averageTemp = totalTemp / numReadings; 
+  averageRH = totalRH / numReadings; 
+
+  heInput = averageTemp;//map(averageTemp, 0, 1023, -45.2142, 80);
+  coInput = heInput;
+  huInput = averageRH;//map(averageRH, 0, 1023, -25.2142, 100);
+  deInput = huInput;
+  heater.Compute();
+  cooler.Compute();
+  humidifier.Compute();
+  dehumidifier.Compute();
+  unsigned long now = millis();
+  if(now - windowStartTime>windowSize){ //time to shift the Relay Window
+    windowStartTime += windowSize;
+  }
+  if(heOutput > now - windowStartTime){
+    digitalWrite(hePin,HIGH); // 
+  }
+  else{
+    digitalWrite(hePin,LOW); // 
+  }
+  analogWrite(coPin, coOutput); // 
+  analogWrite(huPin, huOutput); // 
+  analogWrite(dePin, deOutput); // 
+}
+
+double doubleMap(double in, double A, double B, double C, double D) {  //Converts values between different scales
+  double out;                                                          //doubleMap(Input,original min, original max, new min, new max);
+  out = (in-A)/(B-A)*(D-C)+C;                                          //example: input 5 in range 0-100, want range 0-500.
+  return out;                                                          //doubleMap(5,0,100,0,500);
+}                                                                      //output = (5-0)/(100-0)*(500-0)+0 = 25

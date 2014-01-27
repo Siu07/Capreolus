@@ -32,10 +32,10 @@ todo:
 #include <PID_v1.h>
 #include <Time.h>
 #include <TimeAlarms.h>
-#include <DS1307RTC.h>
+#include <DS1307RTC.h>  //not currently in use
 #include <LiquidCrystal.h>
 #include <Bounce2.h> //new version of bounce.h
-#include <Wire.h>
+#include <Wire.h>  //only used for calibration program I2c
 #include <phi_interfaces.h>
 
 //Display
@@ -286,14 +286,14 @@ void setup()
   //output RH and Temp values to PID and initilise
   lcd.clear();
   Alarm.timerOnce(1, printscr);  //display every second when a program is running rather than make everything else pause
-  for (int thisReading = 0; thisReading < numReadings; thisReading++)
+  for (int thisReading = 0; thisReading < numReadings; thisReading++)  //First Temperature and RH readings
     readingsTemp[thisReading] = 0;  
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
     readingsRH[thisReading] = 0;
   heSetpoint = 10;
   huSetpoint = 80;
   Alarm.timerRepeat(30, serialPrint);
-  Serial.println("Save as a .CSV file");
+  Serial.println("Save as a .CSV file");    //print headings for serial output to .csv
   Serial.print("Program,");
   Serial.print("Step,");
   Serial.print("Temp,");
