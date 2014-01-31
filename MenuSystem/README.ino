@@ -1,3 +1,19 @@
+//28/01/13
+//Version 0.0.5
+/* ______     ___      .______   .______    _______   ______    __       __    __       _______.
+  /      |   /   \     |   _  \  |   _  \  |   ____| /  __  \  |  |     |  |  |  |     /       |
+ |  ,----'  /  ^  \    |  |_)  | |  |_)  | |  |__   |  |  |  | |  |     |  |  |  |    |   (----`
+ |  |      /  /_\  \   |   ___/  |      /  |   __|  |  |  |  | |  |     |  |  |  |     \   \    
+ |  `----./  _____  \  |  |      |  |\  \-.|  |____ |  `--'  | |  `----.|  `--'  | .----)   |   
+  \______/__/     \__\ | _|      | _| `.__||_______| \______/  |_______| \______/  |_______/    
+                                                                                                   
+
+      _______  __  .__   __.  _______     _______   ______     ______    _______       _______.
+     |   ____||  | |  \ |  | |   ____|   |   ____| /  __  \   /  __  \  |       \     /       |
+     |  |__   |  | |   \|  | |  |__      |  |__   |  |  |  | |  |  |  | |  .--.  |   |   (----`
+     |   __|  |  | |  . `  | |   __|     |   __|  |  |  |  | |  |  |  | |  |  |  |    \   \    
+     |  |     |  | |  |\   | |  |____    |  |     |  `--'  | |  `--'  | |  '--'  |.----)   |   
+     |__|     |__| |__| \__| |_______|   |__|      \______/   \______/  |_______/ |_______/    */
 /*
 todo:
  Done 100%: average last 5 seconds of reading to give consistant result
@@ -5,7 +21,7 @@ todo:
  auto turn off backlight                                             Note: add timeout, think about pwm to fade screen out.
  upgrade power supply                                                Note: 1A should be able to keep 12v steady. Need to get 2.1mm socket
  Done 75%: make routines more efficient                              Note: Using TimeAlarms to provide screen updates at regular intervals rather than slow down processing code.
- Done 50%: add real menu                                                       Note: Experiment with M2tklib more. Probably require complete restructure of code.
+ Done 50%: add real menu                                             Note: Experiment with M2tklib more. Probably require complete restructure of code.
  integrate data logging
  integrate phone support
  only map input reading for display, use unmapped for calculations
