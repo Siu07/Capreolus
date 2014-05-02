@@ -1,5 +1,6 @@
-//31/01/13
-//Version 0.0.6
+//01/04/14
+//Version 0.0.7
+//https://github.com/Siu07/Capreolus/tree/master/Capreolus
 /* ______     ___      .______   .______    _______   ______    __       __    __       _______.
   /      |   /   \     |   _  \  |   _  \  |   ____| /  __  \  |  |     |  |  |  |     /       |
  |  ,----'  /  ^  \    |  |_)  | |  |_)  | |  |__   |  |  |  | |  |     |  |  |  |    |   (----`
@@ -18,13 +19,14 @@
 #include <MenuBackend.h>         //Menu element
 #include <LiquidCrystal.h>       //LCD 20x4
 #include <PID_v1.h>              //
-//#include <PID_AutoTune_v0.h>   Hope to integrate, but not yet.
+#include <PID_AutoTune_v0.h>   Hope to integrate, but not yet.
 #include <EEPROMex.h>            //Saving double varibles to EEPROM
 #include <Time.h>                //Counting from boot time
 #include <TimeAlarms.h>          //Basic multithreading
 #include <Bounce2.h>             //Cleaning User inputs
 #include <math.h>                //mapping numbers between differing scales
 
+boolean encoderChris = true;  //my encoder or davids. Make False before publish
 //Display
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 //Menu system
@@ -37,7 +39,6 @@ int prgStep, prgHour, prgMin;
 double deadband = 0.01; //set the deadband to prevent PID controllers fighting.
 int hours = 0, mins =0, secs = 0;
 int buttonState = 0;
-const int buttonPin = 20;
 long t = 0;
 //Averageing inputs Temperature
 const int numReadings = 10;
@@ -56,13 +57,24 @@ int rhPin = A1;
 int lastDebounceTime = 0;  // the last time the output pin was toggled
 int debounceDelay = 50;    // the debounce time; increase if the output flickers
 int storedPrg = 0;
-int encoderPin1 = 2;
-int encoderPin2 = 3;
-int oldValue = 0;
+//rotary encoder
+enum PinAssignments {
+  encoderPin1 = 2,   // rigth
+  encoderPin2 = 3,   // left
+  buttonPin = 20,    // another two pins
+  backButton = 22
+};
+volatile unsigned int encoderValue = 0;  // a counter for the dial
 volatile int lastEncoded = 0;
-volatile long encoderValue = 0;
+unsigned int lastReportedPos = 1;   // change management
+static boolean rotating=false;      // debounce management
+int oldValue = 0;
 long lastencoderValue = 0;
-int sum = 0;      //encoder sum, terrible name i know
+// interrupt service routine vars
+boolean A_set = false;              
+boolean B_set = false;
+//encoder sum, terrible name i know
+int sum = 0;      
 //heater           Define Default PID parameters            //need to set all to zero and read values from EEPROM
 double heInput, heOutput, heSetpoint;      //suggestions for next attempt      //on boot
 double heKp = 2, heKi = 1, heKd = 5;       //heKp = 2, heKi = 0.05, heKd = 5;
@@ -127,6 +139,16 @@ MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
     MenuItem humid = MenuItem("Humidifier");
     MenuItem dehumid = MenuItem("Dehumidifier");
   MenuItem stat = MenuItem("Status");
+//AutoTube parameters
+byte ATuneModeRemember=2;
+double aTuneStep=50, aTuneNoise=1, aTuneStartValue=100;  //output step for square wave 0-255, 
+unsigned int aTuneLookBack=20;
+
+boolean tuning = false;
+unsigned long  modelTime, serialTime;
+
+//set to false to connect to the real world
+boolean useSimulation = true;
   
 void setup()
 {
@@ -170,14 +192,21 @@ void setup()
   deKi = EEPROM.readDouble(40);
   deKd = EEPROM.readDouble(44); // Memory to be allocated by something like this: double heKp = EEPROM.getAddress(sizeof(double));
   //User I/O
-  pinMode(buttonPin, INPUT);  //select button (within rotary encoder) interrupt 3
-  //Rotary encoder
+//rotary encoder
   pinMode(encoderPin1, INPUT); 
-  pinMode(encoderPin2, INPUT);
-  digitalWrite(encoderPin1, HIGH); //turn pullup resistor on
-  digitalWrite(encoderPin2, HIGH); //turn pullup resistor on
-  attachInterrupt(0, updateEncoder, CHANGE); 
-  attachInterrupt(1, updateEncoder, CHANGE);
+  pinMode(encoderPin2, INPUT); 
+  pinMode(buttonPin, INPUT);
+  pinMode(backButton, INPUT);
+ // turn on pullup resistors
+  digitalWrite(encoderPin1, HIGH);
+  digitalWrite(encoderPin2, HIGH);
+  digitalWrite(buttonPin, HIGH);
+  digitalWrite(backButton, HIGH);
+// encoder pin on interrupt 0 (pin 2)
+  attachInterrupt(0, doEncoderA, CHANGE);
+// encoder pin on interrupt 1 (pin 3)
+  attachInterrupt(1, doEncoderB, CHANGE);
+
   for (int thisReading = 0; thisReading < numReadings; thisReading++)  //First Temperature and RH readings
     readingsTemp[thisReading] = 0;  
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
@@ -208,12 +237,26 @@ void loop()
       break;
     }
   }
-  if (encoderValue > lastEncoded)
+  if (encoderValue > lastEncoded){
     menu.moveDown();
-  else if (encoderValue < lastEncoded)
+    lastEncoded = encoderValue;
+  }
+  else if (encoderValue < lastEncoded){
     menu.moveUp();
-  else if (digitalRead(buttonPin) == LOW)
+    lastEncoded = encoderValue;
+  }
+  else if (digitalRead(buttonPin) == LOW){
     menu.use();
+    while (digitalRead(buttonPin) == LOW){
+      delay(10);
+    }
+  }
+  else if (digitalRead(backButton) == HIGH){  //put button wrong way around
+    menu.moveLeft();
+    while (digitalRead(buttonPin) == HIGH){
+      delay(10);
+    }
+  }
   if(!programme == 0) {
     process();
   }
@@ -349,16 +392,49 @@ void userInput() {//use interrupt from encoder to call userInput(), change this 
   }
 }
 
-void updateEncoder(){  //detects and interperates encoder position
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    lastDebounceTime = millis();
-    int MSB = digitalRead(encoderPin1); //MSB = most significant bit
-    int LSB = digitalRead(encoderPin2); //LSB = least significant bit
-    int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
-    sum  = (lastEncoded << 2) | encoded; //adding it to the previous encoded value
-    if(sum == 13 || sum == 7) encoderValue ++;
-    if(sum == 14 || sum == 11) encoderValue --;
-    lastEncoded = encoded; //store this value for next time
+void updateEncoder(){
+  if (encoderChris = false){
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+      lastDebounceTime = millis();
+      int MSB = digitalRead(encoderPin1); //MSB = most significant bit
+      int LSB = digitalRead(encoderPin2); //LSB = least significant bit
+      int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
+      sum  = (lastEncoded << 2) | encoded; //adding it to the previous encoded value
+      if(sum == 13 || sum == 7) encoderValue ++;
+      if(sum == 14 || sum == 11) encoderValue --;
+      //lastEncoded = encoded; //store this value for next time
+    }
+  }
+}
+
+void doEncoderA(){
+  // debounce
+  if (encoderChris = true){
+    if ( rotating ) delay (1);  // wait a little until the bouncing is done
+      // Test transition, did things really change? 
+    if( digitalRead(encoderPin1) != A_set ) {  // debounce once more
+      A_set = !A_set;
+        // adjust counter + if A leads B
+      if ( A_set && !B_set )
+        //lastEncoded = encoderValue;
+        encoderValue += 1;
+        rotating = false;  // no more debouncing until loop() hits again
+    }
+  }
+}
+
+// Interrupt on B changing state, same as A above
+void doEncoderB(){
+  if (encoderChris = true){
+    if ( rotating ) delay (1);
+    if( digitalRead(encoderPin2) != B_set ) {
+      B_set = !B_set;
+      //  adjust counter - 1 if B leads A
+      if( B_set && !A_set ) 
+        //lastEncoded = encoderValue;
+        encoderValue -= 1;
+        rotating = false;
+    }
   }
 }
 
