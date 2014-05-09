@@ -172,27 +172,159 @@ MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
     //runTime
   MenuItem prgSettings = MenuItem("Program Settings");
     MenuItem SetssnackSalami = MenuItem("Snack Salami ");
-      MenuItem hourSets = MenuItem("Hours");
+      MenuItem hourSets1 = MenuItem("Salami Hours");
+        MenuItem hourSets11 = MenuItem("Salami Step 1 Hours");
+        MenuItem hourSets12 = MenuItem("Salami Step 2 Hours");
+        MenuItem hourSets13 = MenuItem("Salami Step 3 Hours");
+        MenuItem hourSets14 = MenuItem("Salami Step 4 Hours");
+        MenuItem hourSets15 = MenuItem("Salami Step 5 Hours");
+        MenuItem hourSets16 = MenuItem("Salami Step 6 Hours");
+        MenuItem hourSets17 = MenuItem("Salami Step 7 Hours");
+        MenuItem hourSets18 = MenuItem("Salami Step 8 Hours");
         //Time settings
-      MenuItem humidSets = MenuItem("RH");
+      MenuItem RHSets1 = MenuItem("Salami RH");
+        MenuItem RHSets11 = MenuItem("Salami Step 1 RH");
+        MenuItem RHSets12 = MenuItem("Salami Step 2 RH");
+        MenuItem RHSets13 = MenuItem("Salami Step 3 RH");
+        MenuItem RHSets14 = MenuItem("Salami Step 4 RH");
+        MenuItem RHSets15 = MenuItem("Salami Step 5 RH");
+        MenuItem RHSets16 = MenuItem("Salami Step 6 RH");
+        MenuItem RHSets17 = MenuItem("Salami Step 7 RH");
+        MenuItem RHSets18 = MenuItem("Salami Step 8 RH");
         //humidity settings
-      MenuItem tempSets = MenuItem("Temperature");
+      MenuItem TempSets1 = MenuItem("Salami Temperature");
+        MenuItem TempSets11 = MenuItem("Salami Step 1 Temp");
+        MenuItem TempSets12 = MenuItem("Salami Step 2 Temp");
+        MenuItem TempSets13 = MenuItem("Salami Step 3 Temp");
+        MenuItem TempSets14 = MenuItem("Salami Step 4 Temp");
+        MenuItem TempSets15 = MenuItem("Salami Step 5 Temp");
+        MenuItem TempSets16 = MenuItem("Salami Step 6 Temp");
+        MenuItem TempSets17 = MenuItem("Salami Step 7 Temp");
+        MenuItem TempSets18 = MenuItem("Salami Step 8 Temp");
         //temperature settings
     MenuItem SetssaucionSec = MenuItem("Saucion Sec ");
+      MenuItem hourSets2 = MenuItem("Saucion Hours");
+        MenuItem hourSets21 = MenuItem("Saucion Step 1 Hours");
+        MenuItem hourSets22 = MenuItem("Saucion Step 2 Hours");
+        MenuItem hourSets23 = MenuItem("Saucion Step 3 Hours");
+        MenuItem hourSets24 = MenuItem("Saucion Step 4 Hours");
+        MenuItem hourSets25 = MenuItem("Saucion Step 5 Hours");
+        MenuItem hourSets26 = MenuItem("Saucion Step 6 Hours");
+        MenuItem hourSets27 = MenuItem("Saucion Step 7 Hours");
+        MenuItem hourSets28 = MenuItem("Saucion Step 8 Hours");
         //Time settings
+      MenuItem RHSets2 = MenuItem("Saucion Sec RH");
+        MenuItem RHSets21 = MenuItem("Saucion Step 1 RH");
+        MenuItem RHSets22 = MenuItem("Saucion Step 2 RH");
+        MenuItem RHSets23 = MenuItem("Saucion Step 3 RH");
+        MenuItem RHSets24 = MenuItem("Saucion Step 4 RH");
+        MenuItem RHSets25 = MenuItem("Saucion Step 5 RH");
+        MenuItem RHSets26 = MenuItem("Saucion Step 6 RH");
+        MenuItem RHSets27 = MenuItem("Saucion Step 7 RH");
+        MenuItem RHSets28 = MenuItem("Saucion Step 8 RH");
         //humidity settings
+      MenuItem TempSets2 = MenuItem("Saucion Sec Temperature");
+        MenuItem TempSets21 = MenuItem("Saucion Step 1 Temp");
+        MenuItem TempSets22 = MenuItem("Saucion Step 2 Temp");
+        MenuItem TempSets23 = MenuItem("Saucion Step 3 Temp");
+        MenuItem TempSets24 = MenuItem("Saucion Step 4 Temp");
+        MenuItem TempSets25 = MenuItem("Saucion Step 5 Temp");
+        MenuItem TempSets26 = MenuItem("Saucion Step 6 Temp");
+        MenuItem TempSets27 = MenuItem("Saucion Step 7 Temp");
+        MenuItem TempSets28 = MenuItem("Saucion Step 8 Temp");
         //temperature settings
     MenuItem Setsbacon = MenuItem("Bacon ");
+      MenuItem hourSets3 = MenuItem("Bacon Hours");
+        MenuItem hourSets31 = MenuItem("Bacon Step 1 Hours");
+        MenuItem hourSets32 = MenuItem("Bacon Step 2 Hours");
+        MenuItem hourSets33 = MenuItem("Bacon Step 3 Hours");
+        MenuItem hourSets34 = MenuItem("Bacon Step 4 Hours");
+        MenuItem hourSets35 = MenuItem("Bacon Step 5 Hours");
+        MenuItem hourSets36 = MenuItem("Bacon Step 6 Hours");
+        MenuItem hourSets37 = MenuItem("Bacon Step 7 Hours");
+        MenuItem hourSets38 = MenuItem("Bacon Step 8 Hours");
         //Time settings
+      MenuItem RHSets3 = MenuItem("Bacon RH");
+        MenuItem RHSets31 = MenuItem("Bacon Step 1 RH");
+        MenuItem RHSets32 = MenuItem("Bacon Step 2 RH");
+        MenuItem RHSets33 = MenuItem("Bacon Step 3 RH");
+        MenuItem RHSets34 = MenuItem("Bacon Step 4 RH");
+        MenuItem RHSets35 = MenuItem("Bacon Step 5 RH");
+        MenuItem RHSets36 = MenuItem("Bacon Step 6 RH");
+        MenuItem RHSets37 = MenuItem("Bacon Step 7 RH");
+        MenuItem RHSets38 = MenuItem("Bacon Step 8 RH");
         //humidity settings
+      MenuItem TempSets3 = MenuItem("Bacon Temperature");
+        MenuItem TempSets31 = MenuItem("Bacon Step 1 Temp");
+        MenuItem TempSets32 = MenuItem("Bacon Step 2 Temp");
+        MenuItem TempSets33 = MenuItem("Bacon Step 3 Temp");
+        MenuItem TempSets34 = MenuItem("Bacon Step 4 Temp");
+        MenuItem TempSets35 = MenuItem("Bacon Step 5 Temp");
+        MenuItem TempSets36 = MenuItem("Bacon Step 6 Temp");
+        MenuItem TempSets37 = MenuItem("Bacon Step 7 Temp");
+        MenuItem TempSets38 = MenuItem("Bacon Step 8 Temp");
         //temperature settings
     MenuItem SetslargeMeat = MenuItem("Large Meat ");
+      MenuItem hourSets4 = MenuItem("Large Meat Hours");
+        MenuItem hourSets41 = MenuItem("Large Step 1 Hours");
+        MenuItem hourSets42 = MenuItem("Large Step 2 Hours");
+        MenuItem hourSets43 = MenuItem("Large Step 3 Hours");
+        MenuItem hourSets44 = MenuItem("Large Step 4 Hours");
+        MenuItem hourSets45 = MenuItem("Large Step 5 Hours");
+        MenuItem hourSets46 = MenuItem("Large Step 6 Hours");
+        MenuItem hourSets47 = MenuItem("Large Step 7 Hours");
+        MenuItem hourSets48 = MenuItem("Large Step 8 Hours");
         //Time settings
+      MenuItem RHSets4 = MenuItem("Large Meat RH");
+        MenuItem RHSets41 = MenuItem("Large Step 1 RH");
+        MenuItem RHSets42 = MenuItem("Large Step 2 RH");
+        MenuItem RHSets43 = MenuItem("Large Step 3 RH");
+        MenuItem RHSets44 = MenuItem("Large Step 4 RH");
+        MenuItem RHSets45 = MenuItem("Large Step 5 RH");
+        MenuItem RHSets46 = MenuItem("Large Step 6 RH");
+        MenuItem RHSets47 = MenuItem("Large Step 7 RH");
+        MenuItem RHSets48 = MenuItem("Large Step 8 RH");
         //humidity settings
+      MenuItem TempSets4 = MenuItem("Large Meat Temperature");
+        MenuItem TempSets41 = MenuItem("Large Step 1 Temp");
+        MenuItem TempSets42 = MenuItem("Large Step 2 Temp");
+        MenuItem TempSets43 = MenuItem("Large Step 3 Temp");
+        MenuItem TempSets44 = MenuItem("Large Step 4 Temp");
+        MenuItem TempSets45 = MenuItem("Large Step 5 Temp");
+        MenuItem TempSets46 = MenuItem("Large Step 6 Temp");
+        MenuItem TempSets47 = MenuItem("Large Step 7 Temp");
+        MenuItem TempSets48 = MenuItem("Large Step 8 Temp");
         //temperature settings
     MenuItem SetsHolding = MenuItem("Holding ");
+      MenuItem hourSets5 = MenuItem("Holding Hours");
+        MenuItem hourSets51 = MenuItem("Holding Step 1 Hours");
+        MenuItem hourSets52 = MenuItem("Holding Step 2 Hours");
+        MenuItem hourSets53 = MenuItem("Holding Step 3 Hours");
+        MenuItem hourSets54 = MenuItem("Holding Step 4 Hours");
+        MenuItem hourSets55 = MenuItem("Holding Step 5 Hours");
+        MenuItem hourSets56 = MenuItem("Holding Step 6 Hours");
+        MenuItem hourSets57 = MenuItem("Holding Step 7 Hours");
+        MenuItem hourSets58 = MenuItem("Holding Step 8 Hours");
         //Time settings
+      MenuItem RHSets5 = MenuItem("Holding RH");
+        MenuItem RHSets51 = MenuItem("Holding Step 1 RH");
+        MenuItem RHSets52 = MenuItem("Holding Step 2 RH");
+        MenuItem RHSets53 = MenuItem("Holding Step 3 RH");
+        MenuItem RHSets54 = MenuItem("Holding Step 4 RH");
+        MenuItem RHSets55 = MenuItem("Holding Step 5 RH");
+        MenuItem RHSets56 = MenuItem("Holding Step 6 RH");
+        MenuItem RHSets57 = MenuItem("Holding Step 7 RH");
+        MenuItem RHSets58 = MenuItem("Holding Step 8 RH");
         //humidity settings
+      MenuItem TempSets5 = MenuItem("Holding Temperature");
+        MenuItem TempSets51 = MenuItem("Holding Step 1 Temp");
+        MenuItem TempSets52 = MenuItem("Holding Step 2 Temp");
+        MenuItem TempSets53 = MenuItem("Holding Step 3 Temp");
+        MenuItem TempSets54 = MenuItem("Holding Step 4 Temp");
+        MenuItem TempSets55 = MenuItem("Holding Step 5 Temp");
+        MenuItem TempSets56 = MenuItem("Holding Step 6 Temp");
+        MenuItem TempSets57 = MenuItem("Holding Step 7 Temp");
+        MenuItem TempSets58 = MenuItem("Holding Step 8 Temp");
         //temperature settings
   MenuItem PIDSettings = MenuItem("PID Settings");
     MenuItem prgHe = MenuItem("Heater");
@@ -301,20 +433,17 @@ void setup() {
   Serial.print("huOutput,");
   Serial.print("coOutput,");
   Serial.println("deOutput");
- 
   Alarm.timerRepeat(15, serialPrint);   //Prints statistics to Serial every 15 secs
   //Alarm.timerRepeat(61, timeSave);    //saves current run time for resume on power loss. In seconds
-
-    programme = 0; //force boot to goto menu. Replace with EEPROMex
-    prgStep = 0;  //
-
+  programme = 0; //force boot to goto menu. Replace with EEPROMex
+  prgStep = 0;  //
   heater.SetSampleTime(1000);  //PID time between calculations in ms
   cooler.SetSampleTime(1000);
   humidifier.SetSampleTime(1000);
   dehumidifier.SetSampleTime(1000);
   //write if first boot
   if (EEPROM.readDouble(48) != bootFlag){ //bootFlag is a version number, if new version, update stored values
-    EEPROM.updateDouble(0,heKp);  //populate values from memory EXPERIMENTAL
+    EEPROM.updateDouble(0,heKp);  //populate values from defaults
     EEPROM.updateDouble(4,heKi);
     EEPROM.updateDouble(8,heKd);
     EEPROM.updateDouble(12,coKp);
@@ -329,6 +458,21 @@ void setup() {
     EEPROM.updateDouble(48,bootFlag);
     EEPROM.updateDouble(52,programme);
     EEPROM.updateDouble(56,prgStep);
+    EEPROM.updateBlock<int>(64, prgOne, 8);
+    EEPROM.updateBlock<int>(72, prgTwo, 8);
+    EEPROM.updateBlock<int>(80, prgThree, 8);
+    EEPROM.updateBlock<int>(88, prgFour, 8);
+    EEPROM.updateBlock<int>(96, prgFive, 8);
+    EEPROM.updateBlock<int>(64, prgOneRH, 8);
+    EEPROM.updateBlock<int>(72, prgTwoRH, 8);
+    EEPROM.updateBlock<int>(80, prgThreeRH, 8);
+    EEPROM.updateBlock<int>(88, prgFourRH, 8);
+    EEPROM.updateBlock<int>(96, prgFiveRH, 8);
+    EEPROM.updateBlock<int>(64, prgOneTemp, 8);
+    EEPROM.updateBlock<int>(72, prgTwoTemp, 8);
+    EEPROM.updateBlock<int>(80, prgThreeTemp, 8);
+    EEPROM.updateBlock<int>(88, prgFourTemp, 8);
+    EEPROM.updateBlock<int>(96, prgFiveTemp, 8);
     //EEPROM.updateDouble(60,runTimer);
     Serial.println("New version, Memory overwritten");    
   }
@@ -343,7 +487,22 @@ void setup() {
   huKd = EEPROM.readDouble(32);
   deKp = EEPROM.readDouble(36);
   deKi = EEPROM.readDouble(40);
-  deKd = EEPROM.readDouble(44); // Memory to be allocated by something like this: double heKp = EEPROM.getAddress(sizeof(double));
+  deKd = EEPROM.readDouble(44);
+  EEPROM.readBlock<int>(64, prgOne, 8);
+  EEPROM.readBlock<int>(72, prgTwo, 8);
+  EEPROM.readBlock<int>(80, prgThree, 8);
+  EEPROM.readBlock<int>(88, prgFour, 8);
+  EEPROM.readBlock<int>(96, prgFive, 8);
+  EEPROM.readBlock<int>(64, prgOneRH, 8);
+  EEPROM.readBlock<int>(72, prgTwoRH, 8);
+  EEPROM.readBlock<int>(80, prgThreeRH, 8);
+  EEPROM.readBlock<int>(88, prgFourRH, 8);
+  EEPROM.readBlock<int>(96, prgFiveRH, 8);
+  EEPROM.readBlock<int>(64, prgOneTemp, 8);
+  EEPROM.readBlock<int>(72, prgTwoTemp, 8);
+  EEPROM.readBlock<int>(80, prgThreeTemp, 8);
+  EEPROM.readBlock<int>(88, prgFourTemp, 8);
+  EEPROM.readBlock<int>(96, prgFiveTemp, 8); // Memory to be allocated by something like this: double heKp = EEPROM.getAddress(sizeof(double));
   //bootflag in mem 48, no need to load again.
   programme = EEPROM.readDouble(52);
   prgStep = EEPROM.readDouble(56);
@@ -412,6 +571,7 @@ void setup() {
 
 void loop() {
   process();
+  Alarm.delay(10); // check if timer has expired
   // put your main code here, to run repeatedly: 
   //Serial.println("Flag 1 ");
   if (encoderValue > lastEncoded){
@@ -423,33 +583,35 @@ void loop() {
     lastEncoded = encoderValue;
   }
   else if (digitalRead(buttonPin) == LOW){
+    while (digitalRead(buttonPin) == LOW) delay(10);
     if (calculating == false) {
       menu.use();
       menu.moveRight();
     }
-    while (digitalRead(buttonPin) == LOW) delay(10);
   }
   else if (digitalRead(backButton) == LOW){
+    while (digitalRead(backButton) == LOW) delay(10);
     if (calculating == false) menu.moveLeft();
-    while (digitalRead(buttonPin) == LOW) delay(10);
-  }
-  else if (digitalRead(backButton) == LOW){
-    calculating = false;
-    menu.moveDown();
-    programme = 0;
+    else {
+      Serial.println("Flag 4");
+    Serial.println(calculating);
+      calculating = false;
+      lcd.clear();
+      menu.moveBack();
+      programme = 0;
+      prgSec = 0;
+      prgMin = 0;
+      prgHour = prgFive[prgStep];
+      RH = prgFiveRH[prgStep];
+      Temp = prgFiveTemp[prgStep];
+      strcpy(name, "error");
+      EEPROM.updateDouble(52,0);  //reset programme
+      EEPROM.updateDouble(56,0);  //reset prgStep
+    }
     prgStep = 0;
-    prgSec = 0;
-    prgMin = 0;
-    prgHour = prgFive[prgStep];
-    RH = prgFiveRH[prgStep];
-    Temp = prgFiveTemp[prgStep];
-    strcpy(name, "error");
-    EEPROM.updateDouble(52,0);  //reset programme
-    EEPROM.updateDouble(56,0);  //reset prgStep
-    while (digitalRead(buttonPin) == LOW) delay(10);
   }
-  Alarm.delay(10); // check if timer has expired
 }
+
 void doEncoderA(){
   // debounce
   if ( rotating ) delay (20);  // wait a little until the bouncing is done
@@ -481,9 +643,9 @@ void printscr()
 {
   if (calculating == true) {
     time_t t = now()- runTimer;
-    if(second() < 5){
-      lcd.clear();
-    }
+    //if(second() < 5){
+    //  lcd.clear();
+    //}
     //Print run time information every seconds whilst calculating PID
     lcd.setCursor(0, 0);
     lcd.print("Temp:");
@@ -584,7 +746,7 @@ void process() {
   
 void prg(){    //to exit program set step to 8 and call "prg();"
   if (prgStep == 0) {
-    runTimer = now(); //- runTimer;
+    runTimer = now();
     EEPROM.updateDouble(52,programme);  //set programme selection to resume on power loss
     EEPROM.updateDouble(56,0);
     //setTime(0,0,0,1,1,13); // set time to Saturday 0:00:00am Jan 1 2013   // setTime to be synced to RTC
@@ -633,71 +795,71 @@ void userInput(int menuFlag, float scale) { //Flag to interperate where its from
       inputFlag = false;
       lcd.setCursor(2, 0);
       switch (menuFlag) {  //case number, first digit: equipment type, second didgit: P,I or D
-        case 11: 
-          heKp = numInput;
-          EEPROM.updateDouble(0,numInput);
-          heater.SetTunings(numInput,heKi,heKd);// Heater Kp
-          break;
-        case 12: 
-          heKi = numInput;
-          EEPROM.updateDouble(4,numInput);
-          heater.SetTunings(heKp,numInput,heKd);// Heater Ki
-          break;
-        case 13: 
-          heKd = numInput;
-          EEPROM.updateDouble(8,numInput);
-          heater.SetTunings(heKp,heKi,numInput);// Heater Kd
-          break;
-        case 21: 
-          coKp = numInput;
-          EEPROM.updateDouble(12,numInput);
-          cooler.SetTunings(numInput,coKi,coKd);// Cooler Kp
-          break;
-        case 22: 
-          coKi = numInput;
-          EEPROM.updateDouble(16,numInput);
-          cooler.SetTunings(coKp,numInput,coKd);// Cooler Ki
-          break;
-        case 23: 
-          coKd = numInput;
-          EEPROM.updateDouble(20,numInput);
-          cooler.SetTunings(coKp,coKi,numInput);// Cooler Kd
-          break;
-        case 31: 
-          huKp = numInput;
-          EEPROM.updateDouble(24,numInput);
-          humidifier.SetTunings(numInput,huKi,huKd);//Humidifier Kp
-          break;
-        case 32: 
-          huKi = numInput;
-          EEPROM.updateDouble(28,numInput);
-          humidifier.SetTunings(huKp,numInput,huKd);// Humidifier Ki
-          break;
-        case 33: 
-          huKd = numInput;
-          EEPROM.updateDouble(32,numInput);
-          humidifier.SetTunings(huKp,huKi,numInput);// Humidifier Kd
-          break;
-        case 41: 
-          deKp = numInput;
-          EEPROM.updateDouble(36,numInput);
-          dehumidifier.SetTunings(numInput,deKi,deKd);// Dehumidifier Kp
-          break;
-        case 42: 
-          deKi = numInput;
-          EEPROM.updateDouble(40,numInput);
-          dehumidifier.SetTunings(deKp,numInput,deKd);// Dehumidifier Ki
-          break;
-        case 43: 
-          deKd = numInput;
-          EEPROM.updateDouble(44,numInput);//double update for double the fun.
-          dehumidifier.SetTunings(deKp,deKi,numInput);// Dehumidifier Kd
-          break;
-         default:
-           break;
-        }
+      case 11: 
+        heKp = numInput;
+        EEPROM.updateDouble(0,numInput);
+        heater.SetTunings(numInput,heKi,heKd);// Heater Kp
+        break;
+      case 12: 
+        heKi = numInput;
+        EEPROM.updateDouble(4,numInput);
+        heater.SetTunings(heKp,numInput,heKd);// Heater Ki
+        break;
+      case 13: 
+        heKd = numInput;
+        EEPROM.updateDouble(8,numInput);
+        heater.SetTunings(heKp,heKi,numInput);// Heater Kd
+        break;
+      case 21: 
+        coKp = numInput;
+        EEPROM.updateDouble(12,numInput);
+        cooler.SetTunings(numInput,coKi,coKd);// Cooler Kp
+        break;
+      case 22: 
+        coKi = numInput;
+        EEPROM.updateDouble(16,numInput);
+        cooler.SetTunings(coKp,numInput,coKd);// Cooler Ki
+        break;
+      case 23: 
+        coKd = numInput;
+        EEPROM.updateDouble(20,numInput);
+        cooler.SetTunings(coKp,coKi,numInput);// Cooler Kd
+        break;
+      case 31: 
+        huKp = numInput;
+        EEPROM.updateDouble(24,numInput);
+        humidifier.SetTunings(numInput,huKi,huKd);//Humidifier Kp
+        break;
+      case 32: 
+        huKi = numInput;
+        EEPROM.updateDouble(28,numInput);
+        humidifier.SetTunings(huKp,numInput,huKd);// Humidifier Ki
+        break;
+      case 33: 
+        huKd = numInput;
+        EEPROM.updateDouble(32,numInput);
+        humidifier.SetTunings(huKp,huKi,numInput);// Humidifier Kd
+        break;
+      case 41: 
+        deKp = numInput;
+        EEPROM.updateDouble(36,numInput);
+        dehumidifier.SetTunings(numInput,deKi,deKd);// Dehumidifier Kp
+        break;
+      case 42: 
+        deKi = numInput;
+        EEPROM.updateDouble(40,numInput);
+        dehumidifier.SetTunings(deKp,numInput,deKd);// Dehumidifier Ki
+        break;
+      case 43: 
+        deKd = numInput;
+        EEPROM.updateDouble(44,numInput);//double update for double the fun.
+        dehumidifier.SetTunings(deKp,deKi,numInput);// Dehumidifier Kd
+        break;
+       default:
+         break;
       }
     }
+  }
   calculating = false;
   while (digitalRead(buttonPin) == LOW) delay(10);
 }
