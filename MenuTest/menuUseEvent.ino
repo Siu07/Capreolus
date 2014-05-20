@@ -247,9 +247,485 @@ void menuUseEvent(MenuUseEvent used)
     lcd.clear();
     menu.moveLeft();
   }
-    else if (used.item == ) {
-      
-      
+  else if (used.item == hourSets11) {    //hours 1
+    userInput(51,1);
+    //prgOne[0]
+  }
+  else if (used.item == hourSets12) {
+    userInput(52,1);
+    //prgOne[1]
+  }
+  else if (used.item == hourSets13) {
+    userInput(53,1);
+    //prgOne[2]
+  }
+  else if (used.item == hourSets14) {
+    userInput(54,1);
+    //prgOne[3]
+  }
+  else if (used.item == hourSets15) {
+    userInput(55,1);
+    //prgOne[4]
+  }
+  else if (used.item == hourSets16) {
+    userInput(56,1);
+    //prgOne[5]
+  }
+  else if (used.item == hourSets17) {
+    userInput(57,1);
+    //prgOne[6]
+  }
+  else if (used.item == hourSets18) {
+    userInput(58,1);
+    //prgOne[7]
+  }
+  else if (used.item == hourSets21) {    //hours 2
+    userInput(61,1);
+    //prgTwo[0]
+  }
+  else if (used.item == hourSets22) {
+    userInput(62,1);
+    //prgTwo[1]
+  }
+  else if (used.item == hourSets23) {
+    userInput(63,1);
+    //prgTwo[2]
+  }
+  else if (used.item == hourSets24) {
+    userInput(64,1);
+    //prgTwo[3]
+  }
+  else if (used.item == hourSets25) {
+    userInput(65,1);
+    //prgTwo[4]
+  }
+  else if (used.item == hourSets26) {
+    userInput(66,1);
+    //prgTwo[5]
+  }
+  else if (used.item == hourSets27) {
+    userInput(67,1);
+    //prgTwo[6]
+  }
+  else if (used.item == hourSets28) {
+    userInput(68,1);
+    //prgTwo[7]
+  }
+  else if (used.item == hourSets31) {    //hours 3
+    userInput(71,1);
+    //prgThree[0]
+  }
+  else if (used.item == hourSets32) {
+    userInput(72,1);
+    //prgThree[1]
+  }
+  else if (used.item == hourSets33) {
+    userInput(73,1);
+    //prgThree[2]
+  }
+  else if (used.item == hourSets34) {
+    userInput(74,1);
+    //prgThree[3]
+  }
+  else if (used.item == hourSets35) {
+    userInput(75,1);
+    //prgThree[4]
+  }
+  else if (used.item == hourSets36) {
+    userInput(76,1);
+    //prgThree[5]
+  }
+  else if (used.item == hourSets37) {
+    userInput(77,1);
+    //prgThree[6]
+  }
+  else if (used.item == hourSets38) {
+    userInput(78,1);
+    //prgThree[7]
+  }
+  else if (used.item == hourSets41) {    //hours 4
+    userInput(81,1);
+    //prgFour[0]
+  }
+  else if (used.item == hourSets42) {
+    userInput(82,1);
+    //prgFour[1]
+  }
+  else if (used.item == hourSets43) {
+    userInput(83,1);
+    //prgFour[2]
+  }
+  else if (used.item == hourSets44) {
+    userInput(84,1);
+    //prgFour[3]
+  }
+  else if (used.item == hourSets45) {
+    userInput(85,1);
+    //prgFour[4]
+  }
+  else if (used.item == hourSets46) {
+    userInput(86,1);
+    //prgFour[5]
+  }
+  else if (used.item == hourSets47) {
+    userInput(87,1);
+    //prgFour[6]
+  }
+  else if (used.item == hourSets48) {
+    userInput(88,1);
+    //prgFour[7]
+  }
+  else if (used.item == hourSets51) {    //hours 5
+    userInput(91,1);
+    //prgFive[0]
+  }
+  else if (used.item == hourSets52) {
+    userInput(92,1);
+    //prgFive[1]
+  }
+  else if (used.item == hourSets53) {
+    userInput(93,1);
+    //prgFive[2]
+  }
+  else if (used.item == hourSets54) {
+    userInput(94,1);
+    //prgFive[3]
+  }
+  else if (used.item == hourSets55) {
+    userInput(95,1);
+    //prgFive[4]
+  }
+  else if (used.item == hourSets56) {
+    userInput(96,1);
+    //prgFive[5]
+  }
+  else if (used.item == hourSets57) {
+    userInput(97,1);
+    //prgFive[6]
+  }
+  else if (used.item == hourSets58) {
+    userInput(98,1);
+    //prgFive[7]
+  }
+  else if (used.item == RHSets11) {    //RH 1
+    userInput(101,1);
+    //prgOneRH[0]
+  }
+  else if (used.item == RHSets12) {
+    userInput(102,1);
+    //prgOneRH[1]
+  }
+  else if (used.item == RHSets13) {
+    userInput(103,1);
+    //prgOneRH[2]
+  }
+  else if (used.item == RHSets14) {
+    userInput(104,1);
+    //prgOneRH[3]
+  }
+  else if (used.item == RHSets15) {
+    userInput(105,1);
+    //prgOneRH[4]
+  }
+  else if (used.item == RHSets16) {
+    userInput(106,1);
+    //prgOneRH[5]
+  }
+  else if (used.item == RHSets17) {
+    userInput(107,1);
+    //prgOneRH[6]
+  }
+  else if (used.item == RHSets18) {
+    userInput(108,1);
+    //prgOneRH[7]
+  }
+  else if (used.item == RHSets21) {    //RH 2
+    userInput(111,1);
+    //prgTwoRH[0]
+  }
+  else if (used.item == RHSets22) {
+    userInput(112,1);
+    //prgTwoRH[1]
+  }
+  else if (used.item == RHSets23) {
+    userInput(113,1);
+    //prgTwoRH[2]
+  }
+  else if (used.item == RHSets24) {
+    userInput(114,1);
+    //prgTwoRH[3]
+  }
+  else if (used.item == RHSets25) {
+    userInput(115,1);
+    //prgTwoRH[4]
+  }
+  else if (used.item == RHSets26) {
+    userInput(116,1);
+    //prgTwoRH[5]
+  }
+  else if (used.item == RHSets27) {
+    userInput(117,1);
+    //prgTwoRH[6]
+  }
+  else if (used.item == RHSets28) {
+    userInput(118,1);
+    //prgTwoRH[7]
+  }
+  else if (used.item == RHSets31) {    //RH 3
+    userInput(121,1);
+    //prgThreeRH[0]
+  }
+  else if (used.item == RHSets32) {
+    userInput(122,1);
+    //prgThreeRH[1]
+  }
+  else if (used.item == RHSets33) {
+    userInput(123,1);
+    //prgThreeRH[2]
+  }
+  else if (used.item == RHSets34) {
+    userInput(124,1);
+    //prgThreeRH[3]
+  }
+  else if (used.item == RHSets35) {
+    userInput(125,1);
+    //prgThreeRH[4]
+  }
+  else if (used.item == RHSets36) {
+    userInput(126,1);
+    //prgThreeRH[5]
+  }
+  else if (used.item == RHSets37) {
+    userInput(127,1);
+    //prgThreeRH[6]
+  }
+  else if (used.item == RHSets38) {
+    userInput(128,1);
+    //prgThreeRH[7]
+  }
+  else if (used.item == RHSets41) {    //RH 4
+    userInput(131,1);
+    //prgFourRH[0]
+  }
+  else if (used.item == RHSets42) {
+    userInput(132,1);
+    //prgFourRH[1]
+  }
+  else if (used.item == RHSets43) {
+    userInput(133,1);
+    //prgFourRH[2]
+  }
+  else if (used.item == RHSets44) {
+    userInput(134,1);
+    //prgFourRH[3]
+  }
+  else if (used.item == RHSets45) {
+    userInput(135,1);
+    //prgFourRH[4]
+  }
+  else if (used.item == RHSets46) {
+    userInput(136,1);
+    //prgFourRH[5]
+  }
+  else if (used.item == RHSets47) {
+    userInput(137,1);
+    //prgFourRH[6]
+  }
+  else if (used.item == RHSets48) {
+    userInput(138,1);
+    //prgFourRH[7]
+  }
+  else if (used.item == RHSets51) {    //RH 5
+    userInput(141,1);
+    //prgFiveRH[0]
+  }
+  else if (used.item == RHSets52) {
+    userInput(142,1);
+    //prgFiveRH[1]
+  }
+  else if (used.item == RHSets53) {
+    userInput(143,1);
+    //prgFiveRH[2]
+  }
+  else if (used.item == RHSets54) {
+    userInput(144,1);
+    //prgFiveRH[3]
+  }
+  else if (used.item == RHSets55) {
+    userInput(145,1);
+    //prgFiveRH[4]
+  }
+  else if (used.item == RHSets56) {
+    userInput(146,1);
+    //prgFiveRH[5]
+  }
+  else if (used.item == RHSets57) {
+    userInput(147,1);
+    //prgFiveRH[6]
+  }
+  else if (used.item == RHSets58) {
+    userInput(148,1);
+    //prgFiveRH[7]
+  }
+  else if (used.item == TempSets11) {    //Temps 1
+    userInput(151,1);
+    //prgOneTemp[0]
+  }
+  else if (used.item == TempSets12) {
+    userInput(152,1);
+    //prgOneTemp[1]
+  }
+  else if (used.item == TempSets13) {
+    userInput(153,1);
+    //prgOneTemp[2]
+  }
+  else if (used.item == TempSets14) {
+    userInput(154,1);
+    //prgOneTemp[3]
+  }
+  else if (used.item == TempSets15) {
+    userInput(155,1);
+    //prgOneTemp[4]
+  }
+  else if (used.item == TempSets16) {
+    userInput(156,1);
+    //prgOneTemp[5]
+  }
+  else if (used.item == TempSets17) {
+    userInput(157,1);
+    //prgOneTemp[6]
+  }
+  else if (used.item == TempSets18) {
+    userInput(158,1);
+    //prgOneTemp[7]
+  }
+  else if (used.item == TempSets21) {    //Temps 2
+    userInput(161,1);
+    //prgTwoTemp[0]
+  }
+  else if (used.item == TempSets22) {
+    userInput(162,1);
+    //prgTwoTemp[1]
+  }
+  else if (used.item == TempSets23) {
+    userInput(163,1);
+    //prgTwoTemp[2]
+  }
+  else if (used.item == TempSets24) {
+    userInput(164,1);
+    //prgTwoTemp[3]
+  }
+  else if (used.item == TempSets25) {
+    userInput(165,1);
+    //prgTwoTemp[4]
+  }
+  else if (used.item == TempSets26) {
+    userInput(166,1);
+    //prgTwoTemp[5]
+  }
+  else if (used.item == TempSets27) {
+    userInput(167,1);
+    //prgTwoTemp[6]
+  }
+  else if (used.item == TempSets28) {
+    userInput(168,1);
+    //prgTwoTemp[7]
+  }
+  else if (used.item == TempSets31) {    //Temps 3
+    userInput(171,1);
+    //prgThreeTemp[0]
+  }
+  else if (used.item == TempSets32) {
+    userInput(172,1);
+    //prgThreeTemp[1]
+  }
+  else if (used.item == TempSets33) {
+    userInput(173,1);
+    //prgThreeTemp[2]
+  }
+  else if (used.item == TempSets34) {
+    userInput(174,1);
+    //prgThreeTemp[3]
+  }
+  else if (used.item == TempSets35) {
+    userInput(175,1);
+    //prgThreeTemp[4]
+  }
+  else if (used.item == TempSets36) {
+    userInput(176,1);
+    //prgThreeTemp[5]
+  }
+  else if (used.item == TempSets37) {
+    userInput(177,1);
+    //prgThreeTemp[6]
+  }
+  else if (used.item == TempSets38) {
+    userInput(178,1);
+    //prgThreeTemp[7]
+  }
+  else if (used.item == TempSets41) {    //Temps 4
+    userInput(181,1);
+    //prgFourTemp[0]
+  }
+  else if (used.item == TempSets42) {
+    userInput(182,1);
+    //prgFourTemp[1]
+  }
+  else if (used.item == TempSets43) {
+    userInput(183,1);
+    //prgFourTemp[2]
+  }
+  else if (used.item == TempSets44) {
+    userInput(184,1);
+    //prgFourTemp[3]
+  }
+  else if (used.item == TempSets45) {
+    userInput(185,1);
+    //prgFourTemp[4]
+  }
+  else if (used.item == TempSets46) {
+    userInput(186,1);
+    //prgFourTemp[5]
+  }
+  else if (used.item == TempSets47) {
+    userInput(187,1);
+    //prgFourTemp[6]
+  }
+  else if (used.item == TempSets48) {
+    userInput(188,1);
+    //prgFourTemp[7]
+  }
+  else if (used.item == TempSets51) {    //Temps 5
+    userInput(191,1);
+    //prgFiveTemp[0]
+  }
+  else if (used.item == TempSets52) {
+    userInput(192,1);
+    //prgFiveTemp[1]
+  }
+  else if (used.item == TempSets53) {
+    userInput(193,1);
+    //prgFiveTemp[2]
+  }
+  else if (used.item == TempSets54) {
+    userInput(194,1);
+    //prgFiveTemp[3]
+  }
+  else if (used.item == TempSets55) {
+    userInput(195,1);
+    //prgFiveTemp[4]
+  }
+  else if (used.item == TempSets56) {
+    userInput(196,1);
+    //prgFiveTemp[5]
+  }
+  else if (used.item == TempSets57) {
+    userInput(197,1);
+    //prgFiveTemp[6]
+  }
+  else if (used.item == TempSets58) {
+    userInput(198,1);
+    //prgFiveTemp[7]
   }
 }
 
@@ -391,6 +867,487 @@ void menuChangeEvent(MenuChangeEvent changed)
     lcd.print("Dehumidifier D: ");
     lcd.print(deKd);
   }
+  else if (changed.to.getName() == hourSets11) {    //hours 1
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[0]);
+  }
+  else if (changed.to.getName() == hourSets12) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[1]);
+  }
+  else if (changed.to.getName() == hourSets13) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[2]);
+  }
+  else if (changed.to.getName() == hourSets14) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[3]);
+  }
+  else if (changed.to.getName() == hourSets15) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[4]);
+  }
+  else if (changed.to.getName() == hourSets16) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[5]);
+  }
+  else if (changed.to.getName() == hourSets17) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[6]);
+  }
+  else if (changed.to.getName() == hourSets18) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOne[7]);
+  }
+  else if (changed.to.getName() == hourSets21) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[0]);
+  }
+  else if (changed.to.getName() == hourSets22) {    //hours 2
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[1]);
+  }
+  else if (changed.to.getName() == hourSets23) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[2]);
+  }
+  else if (changed.to.getName() == hourSets24) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[3]);
+  }
+  else if (changed.to.getName() == hourSets25) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[4]);
+  }
+  else if (changed.to.getName() == hourSets26) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[5]);
+  }
+  else if (changed.to.getName() == hourSets27) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[6]);
+  }
+  else if (changed.to.getName() == hourSets28) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwo[7]);
+  }
+  else if (changed.to.getName() == hourSets31) {    //hours 3
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[0]);
+  }
+  else if (changed.to.getName() == hourSets32) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[1]);
+  }
+  else if (changed.to.getName() == hourSets33) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[2]);
+  }
+  else if (changed.to.getName() == hourSets34) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[3]);
+  }
+  else if (changed.to.getName() == hourSets35) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[4]);
+  }
+  else if (changed.to.getName() == hourSets36) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[5]);
+  }
+  else if (changed.to.getName() == hourSets37) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[6]);
+  }
+  else if (changed.to.getName() == hourSets38) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThree[7]);
+  }
+  else if (changed.to.getName() == hourSets41) {    //hours 4
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[0]);
+  }
+  else if (changed.to.getName() == hourSets42) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[1]);
+  }
+  else if (changed.to.getName() == hourSets43) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[2]);
+  }
+  else if (changed.to.getName() == hourSets44) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[3]);
+  }
+  else if (changed.to.getName() == hourSets45) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[4]);
+  }
+  else if (changed.to.getName() == hourSets46) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[5]);
+  }
+  else if (changed.to.getName() == hourSets47) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[6]);
+  }
+  else if (changed.to.getName() == hourSets48) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFour[7]);
+  }
+  else if (changed.to.getName() == hourSets51) {    //hours 5
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[0]);
+  }
+  else if (changed.to.getName() == hourSets52) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[1]);
+  }
+  else if (changed.to.getName() == hourSets53) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[2]);
+  }
+  else if (changed.to.getName() == hourSets54) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[3]);
+  }
+  else if (changed.to.getName() == hourSets55) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[4]);
+  }
+  else if (changed.to.getName() == hourSets56) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[5]);
+  }
+  else if (changed.to.getName() == hourSets57) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[6]);
+  }
+  else if (changed.to.getName() == hourSets58) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFive[7]);
+  }
+  else if (changed.to.getName() == RHSets11) {    //RH 1
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[0]);
+  }
+  else if (changed.to.getName() == RHSets12) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[1]);
+  }
+  else if (changed.to.getName() == RHSets13) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[2]);
+  }
+  else if (changed.to.getName() == RHSets14) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[3]);
+  }
+  else if (changed.to.getName() == RHSets15) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[4]);
+  }
+  else if (changed.to.getName() == RHSets16) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[5]);
+  }
+  else if (changed.to.getName() == RHSets17) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[6]);
+  }
+  else if (changed.to.getName() == RHSets18) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneRH[7]);
+  }
+  else if (changed.to.getName() == RHSets21) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[0]);
+  }
+  else if (changed.to.getName() == RHSets22) {    //RH 2
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[1]);
+  }
+  else if (changed.to.getName() == RHSets23) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[2]);
+  }
+  else if (changed.to.getName() == RHSets24) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[3]);
+  }
+  else if (changed.to.getName() == RHSets25) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[4]);
+  }
+  else if (changed.to.getName() == RHSets26) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[5]);
+  }
+  else if (changed.to.getName() == RHSets27) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[6]);
+  }
+  else if (changed.to.getName() == RHSets28) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoRH[7]);
+  }
+  else if (changed.to.getName() == RHSets31) {    //RH 3
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[0]);
+  }
+  else if (changed.to.getName() == RHSets32) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[1]);
+  }
+  else if (changed.to.getName() == RHSets33) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[2]);
+  }
+  else if (changed.to.getName() == RHSets34) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[3]);
+  }
+  else if (changed.to.getName() == RHSets35) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[4]);
+  }
+  else if (changed.to.getName() == RHSets36) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[5]);
+  }
+  else if (changed.to.getName() == RHSets37) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[6]);
+  }
+  else if (changed.to.getName() == RHSets38) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeRH[7]);
+  }
+  else if (changed.to.getName() == RHSets41) {    //RH 4
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[0]);
+  }
+  else if (changed.to.getName() == RHSets42) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[1]);
+  }
+  else if (changed.to.getName() == RHSets43) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[2]);
+  }
+  else if (changed.to.getName() == RHSets44) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[3]);
+  }
+  else if (changed.to.getName() == RHSets45) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[4]);
+  }
+  else if (changed.to.getName() == RHSets46) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[5]);
+  }
+  else if (changed.to.getName() == RHSets47) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[6]);
+  }
+  else if (changed.to.getName() == RHSets48) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourRH[7]);
+  }
+  else if (changed.to.getName() == RHSets51) {    //RH 5
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[0]);
+  }
+  else if (changed.to.getName() == RHSets52) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[1]);
+  }
+  else if (changed.to.getName() == RHSets53) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[2]);
+  }
+  else if (changed.to.getName() == RHSets54) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[3]);
+  }
+  else if (changed.to.getName() == RHSets55) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[4]);
+  }
+  else if (changed.to.getName() == RHSets56) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[5]);
+  }
+  else if (changed.to.getName() == RHSets57) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[6]);
+  }
+  else if (changed.to.getName() == RHSets58) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveRH[7]);
+  }
+  else if (changed.to.getName() == TempSets11) {    //Temps 1
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[0]);
+  }
+  else if (changed.to.getName() == TempSets12) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[1]);
+  }
+  else if (changed.to.getName() == TempSets13) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[2]);
+  }
+  else if (changed.to.getName() == TempSets14) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[3]);
+  }
+  else if (changed.to.getName() == TempSets15) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[4]);
+  }
+  else if (changed.to.getName() == TempSets16) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[5]);
+  }
+  else if (changed.to.getName() == TempSets17) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[6]);
+  }
+  else if (changed.to.getName() == TempSets18) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgOneTemp[7]);
+  }
+  else if (changed.to.getName() == TempSets21) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[0]);
+  }
+  else if (changed.to.getName() == TempSets22) {    //Temps 2
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[1]);
+  }
+  else if (changed.to.getName() == TempSets23) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[2]);
+  }
+  else if (changed.to.getName() == TempSets24) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[3]);
+  }
+  else if (changed.to.getName() == TempSets25) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[4]);
+  }
+  else if (changed.to.getName() == TempSets26) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[5]);
+  }
+  else if (changed.to.getName() == TempSets27) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[6]);
+  }
+  else if (changed.to.getName() == TempSets28) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgTwoTemp[7]);
+  }
+  else if (changed.to.getName() == TempSets31) {    //Temps 3
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[0]);
+  }
+  else if (changed.to.getName() == TempSets32) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[1]);
+  }
+  else if (changed.to.getName() == TempSets33) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[2]);
+  }
+  else if (changed.to.getName() == TempSets34) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[3]);
+  }
+  else if (changed.to.getName() == TempSets35) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[4]);
+  }
+  else if (changed.to.getName() == TempSets36) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[5]);
+  }
+  else if (changed.to.getName() == TempSets37) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[6]);
+  }
+  else if (changed.to.getName() == TempSets38) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgThreeTemp[7]);
+  }
+  else if (changed.to.getName() == TempSets41) {    //Temps 4
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[0]);
+  }
+  else if (changed.to.getName() == TempSets42) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[1]);
+  }
+  else if (changed.to.getName() == TempSets43) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[2]);
+  }
+  else if (changed.to.getName() == TempSets44) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[3]);
+  }
+  else if (changed.to.getName() == TempSets45) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[4]);
+  }
+  else if (changed.to.getName() == TempSets46) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[5]);
+  }
+  else if (changed.to.getName() == TempSets47) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[6]);
+  }
+  else if (changed.to.getName() == TempSets48) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFourTemp[7]);
+  }
+  else if (changed.to.getName() == TempSets51) {    //Temps 5
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[0]);
+  }
+  else if (changed.to.getName() == TempSets52) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[1]);
+  }
+  else if (changed.to.getName() == TempSets53) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[2]);
+  }
+  else if (changed.to.getName() == TempSets54) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[3]);
+  }
+  else if (changed.to.getName() == TempSets55) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[4]);
+  }
+  else if (changed.to.getName() == TempSets56) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[5]);
+  }
+  else if (changed.to.getName() == TempSets57) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[6]);
+  }
+  else if (changed.to.getName() == TempSets58) {
+    lcd.setCursor(0, 2);
+    lcd.print(prgFiveTemp[7]);
+  }
+  
 }
 
 void menuSetup()    //not enough steps yet, only went up to 5 instead of 8, sigh. Also, cant have numbers before name. e.g. change "1hoursets" to "hoursets1"

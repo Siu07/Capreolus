@@ -2,51 +2,69 @@
 /*
 todo:
  Done 100%: average last 5 seconds of reading to give consistant result
- Done 50%: make user input possible                                            Note: Buy a better rotary encoder, consider a keypad matrix
+ Done 100%: make user input possible                                 Note: Buy a better rotary encoder, consider a keypad matrix
  auto turn off backlight                                             Note: add timeout, think about pwm to fade screen out.
  upgrade power supply                                                Note: 1A should be able to keep 12v steady. Need to get 2.1mm socket
  Done 75%: make routines more efficient                              Note: Using TimeAlarms to provide screen updates at regular intervals rather than slow down processing code.
- Done 90%:add real menu                                                       Note: Experiment with M2tklib more. Probably require complete restructure of code.
+ Done 100%:add real menu                                             Note: Experiment with M2tklib more. Probably require complete restructure of code.
  integrate data logging
  integrate phone support
  Done 100%: only map input reading for display, use unmapped for calculations
  Done 90%: resume on power loss.                                     Note: Rudimentory systems, No run time continuation, starts from begining of last recorded step.
  Done 100%: test "doubleMap" function.
  Done 100%: Note: Add "first boot" flag (with version number) to repopulate all EEPROM data on update or first run. 
+ Done 0%: Add autotune function on its own menu
+ Done 0%: Remove all charcutire related names, make everything generic and allow ability to change names of PID controllers and programs
+ Done 0%: Allow number of programs and number of steps to be adjustable
  */
  /*
  EEPROM Memory Allocation:
-  heKp       = 0      Heater
-  heKi       = 4
-  heKd       = 8
-  coKp       = 12    Cooler
-  coKi       = 16
-  coKd       = 20
-  huKp       = 24    Humidifier
-  huKi       = 28
-  huKd       = 32
-  deKp       = 36    Dehumidifier
-  deKi       = 40
-  deKd       = 44
-  bootFlag   = 48    first run of new version flag
-  programme  = 52    Resume program on power loss
-  prgStep    = 56    Resume step on power loss
-  runTimer   = 60    Program timer
+  heKp         = 0      Heater
+  heKi         = 4
+  heKd         = 8
+  coKp         = 12    Cooler
+  coKi         = 16
+  coKd         = 20
+  huKp         = 24    Humidifier
+  huKi         = 28
+  huKd         = 32
+  deKp         = 36    Dehumidifier
+  deKi         = 40
+  deKd         = 44
+  bootFlag     = 48    first run of new version flag
+  programme    = 52    Resume program on power loss
+  prgStep      = 56    Resume step on power loss
+  runTimer     = 60    Program timer
+  prgOne       = 64
+  prgTwo       = 80
+  prgThree     = 96
+  prgFour      = 112
+  prgFive      = 128
+  prgOneRH     = 144
+  prgTwoRH     = 160
+  prgThreeRH   = 176
+  prgFourRH    = 192
+  prgFiveRH    = 208
+  prgOneTemp   = 224
+  prgTwoTemp   = 240
+  prgThreeTemp = 256
+  prgFourTemp  = 272
+  prgFiveTemp  = 288
  */
 #include <MenuBackend.h>         //Menu element
 #include <LiquidCrystal.h>       //LCD 20x4
 #include <PID_v1.h>              //
-#include <PID_AutoTune_v0.h>  // Hope to integrate, but not yet.
+//#include <PID_AutoTune_v0.h>  // Hope to integrate, but not yet.
 #include <EEPROMex.h>            //Saving double varibles to EEPROM
 #include <Time.h>                //Counting from boot time
 #include <TimeAlarms.h>          //Basic multithreading
 #include <Bounce2.h>             //Cleaning User inputs
 #include <math.h>                //mapping numbers between differing scales
 
-char Version[] = "07/05/14";
+char Version[] = "13/05/14";
 
 boolean encoderChris = true;  //my encoder or davids. Make False before publish
-double bootFlag = 1;  //version number, increment if PID values are changed
+double bootFlag = 0;  //version number, increment if PID values are changed
 //rotary encoder & user inputs
 enum PinAssignments {
   encoderPin1 = 2,   // scroll right
@@ -363,6 +381,7 @@ void setup() {
   //lcd.setCursor(0, 0);
   //lcd.print("Booting"); //Pointless as it boots so fast
   EEPROM.setMemPool(memBase, EEPROMSizeMega); //minimum and maximum address to use. To be used with address allocation.
+  EEPROM.setMaxAllowedWrites(1024);  //must be greater than the total number of addresses to be written to on new version first boot
   //Timing                                                                                       
    setTime(0,0,0,1,1,13); // set time to Saturday 0:00:00am Jan 1 2013   // setTime to be synced to RTC
   //modes
@@ -444,7 +463,7 @@ void setup() {
   //write if first boot
   if (EEPROM.readDouble(48) != bootFlag){ //bootFlag is a version number, if new version, update stored values
     EEPROM.updateDouble(0,heKp);  //populate values from defaults
-    EEPROM.updateDouble(4,heKi);
+    EEPROM.updateDouble(4,heKi);  //double = 4 byte
     EEPROM.updateDouble(8,heKd);
     EEPROM.updateDouble(12,coKp);
     EEPROM.updateDouble(16,coKi);
@@ -458,21 +477,21 @@ void setup() {
     EEPROM.updateDouble(48,bootFlag);
     EEPROM.updateDouble(52,programme);
     EEPROM.updateDouble(56,prgStep);
-    EEPROM.updateBlock<int>(64, prgOne, 8);
-    EEPROM.updateBlock<int>(72, prgTwo, 8);
-    EEPROM.updateBlock<int>(80, prgThree, 8);
-    EEPROM.updateBlock<int>(88, prgFour, 8);
-    EEPROM.updateBlock<int>(96, prgFive, 8);
-    EEPROM.updateBlock<int>(64, prgOneRH, 8);
-    EEPROM.updateBlock<int>(72, prgTwoRH, 8);
-    EEPROM.updateBlock<int>(80, prgThreeRH, 8);
-    EEPROM.updateBlock<int>(88, prgFourRH, 8);
-    EEPROM.updateBlock<int>(96, prgFiveRH, 8);
-    EEPROM.updateBlock<int>(64, prgOneTemp, 8);
-    EEPROM.updateBlock<int>(72, prgTwoTemp, 8);
-    EEPROM.updateBlock<int>(80, prgThreeTemp, 8);
-    EEPROM.updateBlock<int>(88, prgFourTemp, 8);
-    EEPROM.updateBlock<int>(96, prgFiveTemp, 8);
+    EEPROM.updateBlock<int>(64, prgOne, 8);    //int = 2 byte
+    EEPROM.updateBlock<int>(80, prgTwo, 8);
+    EEPROM.updateBlock<int>(96, prgThree, 8);
+    EEPROM.updateBlock<int>(112, prgFour, 8);
+    EEPROM.updateBlock<int>(128, prgFive, 8);
+    EEPROM.updateBlock<int>(144, prgOneRH, 8);
+    EEPROM.updateBlock<int>(160, prgTwoRH, 8);
+    EEPROM.updateBlock<int>(176, prgThreeRH, 8);
+    EEPROM.updateBlock<int>(192, prgFourRH, 8);
+    EEPROM.updateBlock<int>(208, prgFiveRH, 8);
+    EEPROM.updateBlock<int>(224, prgOneTemp, 8);
+    EEPROM.updateBlock<int>(240, prgTwoTemp, 8);
+    EEPROM.updateBlock<int>(256, prgThreeTemp, 8);
+    EEPROM.updateBlock<int>(272, prgFourTemp, 8);
+    EEPROM.updateBlock<int>(288, prgFiveTemp, 8);
     //EEPROM.updateDouble(60,runTimer);
     Serial.println("New version, Memory overwritten");    
   }
@@ -489,20 +508,20 @@ void setup() {
   deKi = EEPROM.readDouble(40);
   deKd = EEPROM.readDouble(44);
   EEPROM.readBlock<int>(64, prgOne, 8);
-  EEPROM.readBlock<int>(72, prgTwo, 8);
-  EEPROM.readBlock<int>(80, prgThree, 8);
-  EEPROM.readBlock<int>(88, prgFour, 8);
-  EEPROM.readBlock<int>(96, prgFive, 8);
-  EEPROM.readBlock<int>(64, prgOneRH, 8);
-  EEPROM.readBlock<int>(72, prgTwoRH, 8);
-  EEPROM.readBlock<int>(80, prgThreeRH, 8);
-  EEPROM.readBlock<int>(88, prgFourRH, 8);
-  EEPROM.readBlock<int>(96, prgFiveRH, 8);
-  EEPROM.readBlock<int>(64, prgOneTemp, 8);
-  EEPROM.readBlock<int>(72, prgTwoTemp, 8);
-  EEPROM.readBlock<int>(80, prgThreeTemp, 8);
-  EEPROM.readBlock<int>(88, prgFourTemp, 8);
-  EEPROM.readBlock<int>(96, prgFiveTemp, 8); // Memory to be allocated by something like this: double heKp = EEPROM.getAddress(sizeof(double));
+  EEPROM.readBlock<int>(80, prgTwo, 8);
+  EEPROM.readBlock<int>(96, prgThree, 8);
+  EEPROM.readBlock<int>(112, prgFour, 8);
+  EEPROM.readBlock<int>(128, prgFive, 8);
+  EEPROM.readBlock<int>(144, prgOneRH, 8);
+  EEPROM.readBlock<int>(160, prgTwoRH, 8);
+  EEPROM.readBlock<int>(176, prgThreeRH, 8);
+  EEPROM.readBlock<int>(192, prgFourRH, 8);
+  EEPROM.readBlock<int>(208, prgFiveRH, 8);
+  EEPROM.readBlock<int>(224, prgOneTemp, 8);
+  EEPROM.readBlock<int>(240, prgTwoTemp, 8);
+  EEPROM.readBlock<int>(256, prgThreeTemp, 8);
+  EEPROM.readBlock<int>(272, prgFourTemp, 8);
+  EEPROM.readBlock<int>(288, prgFiveTemp, 8); // Memory to be allocated by something like this: double heKp = EEPROM.getAddress(sizeof(double));
   //bootflag in mem 48, no need to load again.
   programme = EEPROM.readDouble(52);
   prgStep = EEPROM.readDouble(56);
@@ -855,11 +874,493 @@ void userInput(int menuFlag, float scale) { //Flag to interperate where its from
         EEPROM.updateDouble(44,numInput);//double update for double the fun.
         dehumidifier.SetTunings(deKp,deKi,numInput);// Dehumidifier Kd
         break;
-       default:
-         break;
+      case 51://hourSets11//hours 1
+        prgOne[0] = numInput; 
+        EEPROM.update(64, numInput);
+        break;//hourSets12
+      case 52:
+        prgOne[1] = numInput; 
+        EEPROM.update(66, numInput);
+        break;//hourSets13
+      case 53:
+        prgOne[2] = numInput; 
+        EEPROM.update(68, numInput);
+        break;//hourSets14
+      case 54:
+        prgOne[3] = numInput; 
+        EEPROM.update(70, numInput);
+        break;//hourSets15
+      case 55:
+        prgOne[4] = numInput; 
+        EEPROM.update(72, numInput);
+        break;//hourSets16
+      case 56:
+        prgOne[5] = numInput; 
+        EEPROM.update(74, numInput);
+        break;//hourSets17
+      case 57:
+        prgOne[6] = numInput; 
+        EEPROM.update(76, numInput);
+        break;//hourSets18
+      case 58:
+        prgOne[7] = numInput; 
+        EEPROM.update(78, numInput);
+        break;//hourSets21//hours 2
+      case 61:
+        prgTwo[0] = numInput; 
+        EEPROM.update(80, numInput);
+        break;//hourSets22
+      case 62:
+        prgTwo[1] = numInput; 
+        EEPROM.update(82, numInput);
+        break;//hourSets23
+      case 63:
+        prgTwo[2] = numInput; 
+        EEPROM.update(84, numInput);
+        break;//hourSets24
+      case 64:
+        prgTwo[3] = numInput; 
+        EEPROM.update(86, numInput);
+        break;//hourSets25
+      case 65:
+        prgTwo[4] = numInput; 
+        EEPROM.update(88, numInput);
+        break;//hourSets26
+      case 66:
+        prgTwo[5] = numInput; 
+        EEPROM.update(90, numInput);
+        break;//hourSets27
+      case 67:
+        prgTwo[6] = numInput; 
+        EEPROM.update(92, numInput);
+        break;//hourSets28
+      case 68:
+        prgTwo[7] = numInput; 
+        EEPROM.update(94, numInput);
+        break;//hourSets31//hours 3
+      case 71:
+        prgThree[0] = numInput; 
+        EEPROM.update(96, numInput);
+        break;//hourSets32
+      case 72:
+        prgThree[1] = numInput; 
+        EEPROM.update(98, numInput);
+        break;//hourSets33
+      case 73:
+        prgThree[2] = numInput; 
+        EEPROM.update(100, numInput);
+        break;//hourSets34
+      case 74:
+        prgThree[3] = numInput; 
+        EEPROM.update(102, numInput);
+        break;//hourSets35
+      case 75:
+        prgThree[4] = numInput; 
+        EEPROM.update(104, numInput);
+        break;//hourSets36
+      case 76:
+        prgThree[5] = numInput; 
+        EEPROM.update(106, numInput);
+        break;//hourSets37
+      case 77:
+        prgThree[6] = numInput; 
+        EEPROM.update(108, numInput);
+        break;//hourSets38
+      case 78:
+        prgThree[7] = numInput; 
+        EEPROM.update(110, numInput);
+        break;//hourSets41//hours 4
+      case 81:
+        prgFour[0] = numInput; 
+        EEPROM.update(112, numInput);
+        break;//hourSets42
+      case 82:
+        prgFour[1] = numInput; 
+        EEPROM.update(114, numInput);
+        break;//hourSets43
+      case 83:
+        prgFour[2] = numInput; 
+        EEPROM.update(116, numInput);
+        break;//hourSets44
+      case 84:
+        prgFour[3] = numInput; 
+        EEPROM.update(118, numInput);
+        break;//hourSets45
+      case 85:
+        prgFour[4] = numInput; 
+        EEPROM.update(120, numInput);
+        break;//hourSets46
+      case 86:
+        prgFour[5] = numInput; 
+        EEPROM.update(122, numInput);
+        break;//hourSets47
+      case 87:
+        prgFour[6] = numInput; 
+        EEPROM.update(124, numInput);
+        break;//hourSets48
+      case 88:
+        prgFour[7] = numInput; 
+        EEPROM.update(126, numInput);
+        break;//hourSets51//hours 5
+      case 91:
+        prgFive[0] = numInput; 
+        EEPROM.update(128, numInput);
+        break;//hourSets52
+      case 92:
+        prgFive[1] = numInput; 
+        EEPROM.update(130, numInput);
+        break;//hourSets53
+      case 93:
+        prgFive[2] = numInput; 
+        EEPROM.update(132, numInput);
+        break;//hourSets54
+      case 94:
+        prgFive[3] = numInput; 
+        EEPROM.update(134, numInput);
+        break;//hourSets55
+      case 95:
+        prgFive[4] = numInput; 
+        EEPROM.update(136, numInput);
+        break;//hourSets56
+      case 96:
+        prgFive[5] = numInput; 
+        EEPROM.update(138, numInput);
+        break;//hourSets57
+      case 97:
+        prgFive[6] = numInput; 
+        EEPROM.update(140, numInput);
+        break;//hourSets58
+      case 98:
+        prgFive[7] = numInput; 
+        EEPROM.update(142, numInput);
+        break;//RHSets11//RH 1
+      case 101:
+        prgOneRH[0] = numInput; 
+        EEPROM.update(144, numInput);
+        break;//RHSets12
+      case 102:
+        prgOneRH[1] = numInput; 
+        EEPROM.update(146, numInput);
+        break;//RHSets13
+      case 103:
+        prgOneRH[2] = numInput; 
+        EEPROM.update(148, numInput);
+        break;//RHSets14
+      case 104:
+        prgOneRH[3] = numInput; 
+        EEPROM.update(150, numInput);
+        break;//RHSets15
+      case 105:
+        prgOneRH[4] = numInput; 
+        EEPROM.update(152, numInput);
+        break;//RHSets16
+      case 106:
+        prgOneRH[5] = numInput; 
+        EEPROM.update(154, numInput);
+        break;//RHSets17
+      case 107:
+        prgOneRH[6] = numInput; 
+        EEPROM.update(156, numInput);
+        break;//RHSets18
+      case 108:
+        prgOneRH[7] = numInput; 
+        EEPROM.update(158, numInput);
+        break;//RHSets21//RH 2
+      case 111:
+        prgTwoRH[0] = numInput; 
+        EEPROM.update(160, numInput);
+        break;//RHSets22
+      case 112:
+        prgTwoRH[1] = numInput; 
+        EEPROM.update(162, numInput);
+        break;//RHSets23
+      case 113:
+        prgTwoRH[2] = numInput; 
+        EEPROM.update(164, numInput);
+        break;//RHSets24
+      case 114:
+        prgTwoRH[3] = numInput; 
+        EEPROM.update(166, numInput);
+        break;//RHSets25
+      case 115:
+        prgTwoRH[4] = numInput; 
+        EEPROM.update(168, numInput);
+        break;//RHSets26
+      case 116:
+        prgTwoRH[5] = numInput; 
+        EEPROM.update(170, numInput);
+        break;//RHSets27
+      case 117:
+        prgTwoRH[6] = numInput; 
+        EEPROM.update(172, numInput);
+        break;//RHSets28
+      case 118:
+        prgTwoRH[7] = numInput; 
+        EEPROM.update(174, numInput);
+        break;//RHSets31//RH 3
+      case 121:
+        prgThreeRH[0] = numInput; 
+        EEPROM.update(176, numInput);
+        break;//RHSets32
+      case 122:
+        prgThreeRH[1] = numInput; 
+        EEPROM.update(178, numInput);
+        break;//RHSets33
+      case 123:
+        prgThreeRH[2] = numInput; 
+        EEPROM.update(180, numInput);
+        break;//RHSets34
+      case 124:
+        prgThreeRH[3] = numInput; 
+        EEPROM.update(182, numInput);
+        break;//RHSets35
+      case 125:
+        prgThreeRH[4] = numInput; 
+        EEPROM.update(184, numInput);
+        break;//RHSets36
+      case 126:
+        prgThreeRH[5] = numInput; 
+        EEPROM.update(186, numInput);
+        break;//RHSets37
+      case 127:
+        prgThreeRH[6] = numInput; 
+        EEPROM.update(188, numInput);
+        break;//RHSets38
+      case 128:
+        prgThreeRH[7] = numInput; 
+        EEPROM.update(190, numInput);
+        break;//RHSets41//RH 4
+      case 131:
+        prgFourRH[0] = numInput; 
+        EEPROM.update(192, numInput);
+        break;//RHSets42
+      case 132:
+        prgFourRH[1] = numInput; 
+        EEPROM.update(194, numInput);
+        break;//RHSets43
+      case 133:
+        prgFourRH[2] = numInput; 
+        EEPROM.update(196, numInput);
+        break;//RHSets44
+      case 134:
+        prgFourRH[3] = numInput; 
+        EEPROM.update(198, numInput);
+        break;//RHSets45
+      case 135:
+        prgFourRH[4] = numInput; 
+        EEPROM.update(200, numInput);
+        break;//RHSets46
+      case 136:
+        prgFourRH[5] = numInput; 
+        EEPROM.update(202, numInput);
+        break;//RHSets47
+      case 137:
+        prgFourRH[6] = numInput; 
+        EEPROM.update(204, numInput);
+        break;//RHSets48
+      case 138:
+        prgFourRH[7] = numInput; 
+        EEPROM.update(206, numInput);
+        break;//RHSets51//RH 5
+      case 141:
+        prgFiveRH[0] = numInput; 
+        EEPROM.update(208, numInput);
+        break;//RHSets52
+      case 142:
+        prgFiveRH[1] = numInput; 
+        EEPROM.update(210, numInput);
+        break;//RHSets53
+      case 143:
+        prgFiveRH[2] = numInput; 
+        EEPROM.update(212, numInput);
+        break;//RHSets54
+      case 144:
+        prgFiveRH[3] = numInput; 
+        EEPROM.update(214, numInput);
+        break;//RHSets55
+      case 145:
+        prgFiveRH[4] = numInput; 
+        EEPROM.update(216, numInput);
+        break;//RHSets56
+      case 146:
+        prgFiveRH[5] = numInput; 
+        EEPROM.update(218, numInput);
+        break;//RHSets57
+      case 147:
+        prgFiveRH[6] = numInput; 
+        EEPROM.update(220, numInput);
+        break;//RHSets58
+      case 148:
+        prgFiveRH[7] = numInput; 
+        EEPROM.update(222, numInput);
+        break;//TempSets11//Temps 1
+      case 151:
+        prgOneTemp[0] = numInput; 
+        EEPROM.update(224, numInput);
+        break;//TempSets12
+      case 152:
+        prgOneTemp[1] = numInput; 
+        EEPROM.update(226, numInput);
+        break;//TempSets13
+      case 153:
+        prgOneTemp[2] = numInput; 
+        EEPROM.update(228, numInput);
+        break;//TempSets14
+      case 154:
+        prgOneTemp[3] = numInput; 
+        EEPROM.update(230, numInput);
+        break;//TempSets15
+      case 155:
+        prgOneTemp[4] = numInput; 
+        EEPROM.update(232, numInput);
+        break;//TempSets16
+      case 156:
+        prgOneTemp[5] = numInput; 
+        EEPROM.update(234, numInput);
+        break;//TempSets17
+      case 157:
+        prgOneTemp[6] = numInput; 
+        EEPROM.update(236, numInput);
+        break;//TempSets18
+      case 158:
+        prgOneTemp[7] = numInput; 
+        EEPROM.update(238, numInput);
+        break;//TempSets21//Temps 2
+      case 161:
+        prgTwoTemp[0] = numInput; 
+        EEPROM.update(240, numInput);
+        break;//TempSets22
+      case 162:
+        prgTwoTemp[1] = numInput; 
+        EEPROM.update(242, numInput);
+        break;//TempSets23
+      case 163:
+        prgTwoTemp[2] = numInput; 
+        EEPROM.update(244, numInput);
+        break;//TempSets24
+      case 164:
+        prgTwoTemp[3] = numInput; 
+        EEPROM.update(246, numInput);
+        break;//TempSets25
+      case 165:
+        prgTwoTemp[4] = numInput; 
+        EEPROM.update(248, numInput);
+        break;//TempSets26
+      case 166:
+        prgTwoTemp[5] = numInput; 
+        EEPROM.update(250, numInput);
+        break;//TempSets27
+      case 167:
+        prgTwoTemp[6] = numInput; 
+        EEPROM.update(252, numInput);
+        break;//TempSets28
+      case 168:
+        prgTwoTemp[7] = numInput; 
+        EEPROM.update(254, numInput);
+        break;//TempSets31//Temps 3
+      case 171:
+        prgThreeTemp[0] = numInput; 
+        EEPROM.update(256, numInput);
+        break;//TempSets32
+      case 172:
+        prgThreeTemp[1] = numInput; 
+        EEPROM.update(258, numInput);
+        break;//TempSets33
+      case 173:
+        prgThreeTemp[2] = numInput; 
+        EEPROM.update(260, numInput);
+        break;//TempSets34
+      case 174:
+        prgThreeTemp[3] = numInput; 
+        EEPROM.update(262, numInput);
+        break;//TempSets35
+      case 175:
+        prgThreeTemp[4] = numInput; 
+        EEPROM.update(264, numInput);
+        break;//TempSets36
+      case 176:
+        prgThreeTemp[5] = numInput; 
+        EEPROM.update(266, numInput);
+        break;//TempSets37
+      case 177:
+        prgThreeTemp[6] = numInput; 
+        EEPROM.update(268, numInput);
+        break;//TempSets38
+      case 178:
+        prgThreeTemp[7] = numInput; 
+        EEPROM.update(270, numInput);
+        break;//TempSets41//Temps 4
+      case 181:
+        prgFourTemp[0] = numInput; 
+        EEPROM.update(272, numInput);
+        break;//TempSets42
+      case 182:
+        prgFourTemp[1] = numInput; 
+        EEPROM.update(274, numInput);
+        break;//TempSets43
+      case 183:
+        prgFourTemp[2] = numInput; 
+        EEPROM.update(276, numInput);
+        break;//TempSets44
+      case 184:
+        prgFourTemp[3] = numInput; 
+        EEPROM.update(278, numInput);
+        break;//TempSets45
+      case 185:
+        prgFourTemp[4] = numInput; 
+        EEPROM.update(280, numInput);
+        break;//TempSets46
+      case 186:
+        prgFourTemp[5] = numInput; 
+        EEPROM.update(282, numInput);
+        break;//TempSets47
+      case 187:
+        prgFourTemp[6] = numInput; 
+        EEPROM.update(284, numInput);
+        break;//TempSets48
+      case 188:
+        prgFourTemp[7] = numInput; 
+        EEPROM.update(286, numInput);
+        break;//TempSets51//Temps 5
+      case 191:
+        prgFiveTemp[0] = numInput; 
+        EEPROM.update(288, numInput);
+        break;//TempSets52
+      case 192:
+        prgFiveTemp[1] = numInput; 
+        EEPROM.update(290, numInput);
+        break;//TempSets53
+      case 193:
+        prgFiveTemp[2] = numInput; 
+        EEPROM.update(292, numInput);
+        break;//TempSets54
+      case 194:
+        prgFiveTemp[3] = numInput; 
+        EEPROM.update(294, numInput);
+        break;//TempSets55
+      case 195:
+        prgFiveTemp[4] = numInput; 
+        EEPROM.update(296, numInput);
+        break;//TempSets56
+      case 196:
+        prgFiveTemp[5] = numInput; 
+        EEPROM.update(298, numInput);
+        break;//TempSets57
+      case 197:
+        prgFiveTemp[6] = numInput; 
+        EEPROM.update(300, numInput);
+        break;//TempSets58
+      case 198:
+        prgFiveTemp[7] = numInput; 
+        EEPROM.update(302, numInput);
+        break;
+      default:
+        break;
       }
     }
   }
+  menu.moveDown();
+  menu.moveUp();
   calculating = false;
   while (digitalRead(buttonPin) == LOW) delay(10);
 }
