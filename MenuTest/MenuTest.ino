@@ -64,7 +64,6 @@ todo:
 #include <math.h>                //mapping numbers between differing scales
 
 char Version[] = "27/12/15";
-
 //boolean encoderChris = true;  //my encoder or davids. Make False before publish   //(What did i do with this code????)
 double bootFlag = 0;  //version number, increment if PID values are changed
 //rotary encoder & user inputs
@@ -383,7 +382,7 @@ void setup() {
   Serial.begin(9600);
   lcd.begin(20, 4);
   //lcd.setCursor(0, 0);
-  //lcd.print("Booting"); //Pointless as it boots so fast
+  //lcd.print(F("Booting")); //Pointless as it boots so fast
   EEPROM.setMemPool(memBase, EEPROMSizeMega); //minimum and maximum address to use. To be used with address allocation.
   EEPROM.setMaxAllowedWrites(1024);  //must be greater than the total number of addresses to be written to on new version first boot
   //Timing                                                                                       
@@ -420,42 +419,42 @@ void setup() {
     readingsRH[thisReading] = 0;
   heSetpoint = 10;
   huSetpoint = 80;
-    //Serial.println("Save as a .CSV file");
-  Serial.println("Date,HeaterKp,HeaterKi,HeaterKd,CoolerKp,CoolerKi,CoolerKd,HumididiferKp,HumididiferKi,HumididiferKd,DehumidifierKp,DehumidifierKi,DehumidifierKd");
-  Serial.print("02/09/13,");
+    //Serial.println(F("Save as a .CSV file"));
+  Serial.println(F("Date,HeaterKp,HeaterKi,HeaterKd,CoolerKp,CoolerKi,CoolerKd,HumididiferKp,HumididiferKi,HumididiferKd,DehumidifierKp,DehumidifierKi,DehumidifierKd"));
+  Serial.print(F("27/12/15,"));
   Serial.print(heKp);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(heKi);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(heKd);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(coKp);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(coKi);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(coKd);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(huKp);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(huKi);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(huKd);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(deKp);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(deKi);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.println(deKd);
-  Serial.print("Program,");
-  Serial.print("Step,");
-  Serial.print("Temp,");
-  Serial.print("RH,");
-  Serial.print("Temp_Setpoint,");
-  Serial.print("RH_Setpoint,");
-  Serial.print("heOutput,");
-  Serial.print("huOutput,");
-  Serial.print("coOutput,");
-  Serial.println("deOutput");
+  Serial.print(F("Program,"));
+  Serial.print(F("Step,"));
+  Serial.print(F("Temp,"));
+  Serial.print(F("RH,"));
+  Serial.print(F("Temp_Setpoint,"));
+  Serial.print(F("RH_Setpoint,"));
+  Serial.print(F("heOutput,"));
+  Serial.print(F("huOutput,"));
+  Serial.print(F("coOutput,"));
+  Serial.println(F("deOutput"));
   Alarm.timerRepeat(15, serialPrint);   //Prints statistics to Serial every 15 secs
   //Alarm.timerRepeat(61, timeSave);    //saves current run time for resume on power loss. In seconds
   programme = 0; //force boot to goto menu. Replace with EEPROMex
@@ -497,7 +496,7 @@ void setup() {
     EEPROM.updateBlock<int>(272, prgFourTemp, 8);
     EEPROM.updateBlock<int>(288, prgFiveTemp, 8);
     //EEPROM.updateDouble(60,runTimer);
-    Serial.println("New version, Memory overwritten");    
+    Serial.println(F("New version, Memory overwritten"));    
   }
   heKp = EEPROM.readDouble(0);  //populate values from memory
   heKi = EEPROM.readDouble(4);  //Double occupies 4 bytes. Arduino Due board would require 8.
@@ -596,7 +595,7 @@ void loop() {
   process();
   Alarm.delay(10); // check if timer has expired
   // put your main code here, to run repeatedly: 
-  //Serial.println("Flag 1 ");
+  //Serial.println(F("Flag 1 "));
   if (encoderValue > lastEncoded){
     if (calculating == false) menu.moveDown();
     lastEncoded = encoderValue;
@@ -616,7 +615,7 @@ void loop() {
     while (digitalRead(backButton) == LOW) delay(10);
     if (calculating == false) menu.moveLeft();
     else {
-      Serial.println("Flag 4");
+      //Serial.println(F("Flag 4"));
     Serial.println(calculating);
       calculating = false;
       lcd.clear();
@@ -671,32 +670,32 @@ void printscr()
     //}
     //Print run time information every seconds whilst calculating PID
     lcd.setCursor(0, 0);
-    lcd.print("Temp:");
+    lcd.print(F("Temp:"));
     lcd.print(doubleMap(averageTemp, 0, 1023, -45.2142, 80),2);
     lcd.setCursor(12, 0);
-    lcd.print("RH:");
+    lcd.print(F("RH:"));
     lcd.print(doubleMap(averageRH, 0, 1023, -25.2142, 100),2);
     lcd.setCursor(0, 1);
-    lcd.print("Out: ");
+    lcd.print(F("Out: "));
     lcd.print(Temp);
     lcd.setCursor(15, 1);
     lcd.print(RH);
     lcd.setCursor(0, 2);
-    lcd.print("Prg:");
+    lcd.print(F("Prg:"));
     lcd.print(name);
     lcd.setCursor(17, 2);
-    lcd.print("S:");
+    lcd.print(F("S:"));
     lcd.print(prgStep);
     lcd.setCursor(0, 3);
-    lcd.print("Time:");
+    lcd.print(F("Time:"));
     lcd.setCursor(6, 3);
-    lcd.print("H:");
+    lcd.print(F("H:"));
     lcd.print(hour(t));
     lcd.setCursor(11, 3);
-    lcd.print("M:");
+    lcd.print(F("M:"));
     lcd.print(minute(t));
     lcd.setCursor(16, 3);
-    lcd.print("S:");
+    lcd.print(F("S:"));
     lcd.print(second(t));
     Alarm.timerOnce(1, printscr);
   }
@@ -705,23 +704,23 @@ void printscr()
 void serialPrint()
 {  //to be saved as a CSV file
   Serial.print(programme);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(prgStep);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(heInput);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(huInput);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(Temp);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(RH);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(heOutput);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(huOutput);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.print(coOutput);
-  Serial.print(",");
+  Serial.print(F(","));
   Serial.println(deOutput);
 }
   
@@ -804,13 +803,13 @@ void userInput(int menuFlag, float scale) { //Flag to interperate where its from
   calculating = true;
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("New Input: ");
+  lcd.print(F("New Input: "));
   //encoderValue = 1;
   while (inputFlag == true) {
     if (encoderValue < 0 || encoderValue > 1000) encoderValue = 0;
     if (encoderValue != lastEncoded) {
       lcd.setCursor(0, 1);
-      lcd.print("                   ");
+      lcd.print(F("                   "));
       lcd.setCursor(0, 1);
       numInput = encoderValue * scale;
       lcd.print(numInput);

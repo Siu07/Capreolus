@@ -1,6 +1,6 @@
 void menuUseEvent(MenuUseEvent used)
 {
-  Serial.print("Menu use ");
+  Serial.print(F("Menu use "));
   Serial.println(used.item.getName());
   if (used.item == snackSalami){
     calculating = true;
@@ -79,12 +79,12 @@ void menuUseEvent(MenuUseEvent used)
 //    if (prgStep > 7) prgStep = 0;
 //    lcd.clear();
 //    lcd.setCursor(0, 0);
-//    lcd.print("Snack Salami");
+//    lcd.print(F("Snack Salami"));
 //    lcd.setCursor(0, 1);
-//    lcd.print("Step: ");
+//    lcd.print(F("Step: "));
 //    lcd.print(prgStep + 1);
 //    lcd.setCursor(0, 2);
-//    lcd.print(" Hours   RH   Temp");
+//    lcd.print(F(" Hours   RH   Temp"));
 //    lcd.setCursor(1, 3);
 //    lcd.print(prgOne[prgStep]);
 //    lcd.setCursor(9, 3);
@@ -97,12 +97,12 @@ void menuUseEvent(MenuUseEvent used)
 //    if (prgStep > 7) prgStep = 0;
 //    lcd.clear();
 //    lcd.setCursor(0, 0);
-//    lcd.print("Saucion Sec");
+//    lcd.print(F("Saucion Sec"));
 //    lcd.setCursor(0, 1);
-//    lcd.print("Step: ");
+//    lcd.print(F("Step: "));
 //    lcd.print(prgStep + 1);
 //    lcd.setCursor(0, 2);
-//    lcd.print(" Hours   RH   Temp");
+//    lcd.print(F(" Hours   RH   Temp"));
 //    lcd.setCursor(1, 3);
 //    lcd.print(prgTwo[prgStep]);
 //    lcd.setCursor(9, 3);
@@ -115,12 +115,12 @@ void menuUseEvent(MenuUseEvent used)
 //    if (prgStep > 7) prgStep = 0;
 //    lcd.clear();
 //    lcd.setCursor(0, 0);
-//    lcd.print("Bacon");
+//    lcd.print(F("Bacon"));
 //    lcd.setCursor(0, 1);
-//    lcd.print("Step: ");
+//    lcd.print(F("Step: "));
 //    lcd.print(prgStep + 1);
 //    lcd.setCursor(0, 2);
-//    lcd.print(" Hours   RH   Temp");
+//    lcd.print(F(" Hours   RH   Temp"));
 //    lcd.setCursor(1, 3);
 //    lcd.print(prgThree[prgStep]);
 //    lcd.setCursor(9, 3);
@@ -133,12 +133,12 @@ void menuUseEvent(MenuUseEvent used)
 //    if (prgStep > 7) prgStep = 0;
 //    lcd.clear();
 //    lcd.setCursor(0, 0);
-//    lcd.print("Large Meat");
+//    lcd.print(F("Large Meat"));
 //    lcd.setCursor(0, 1);
-//    lcd.print("Step: ");
+//    lcd.print(F("Step: "));
 //    lcd.print(prgStep + 1);
 //    lcd.setCursor(0, 2);
-//    lcd.print(" Hours   RH   Temp");
+//    lcd.print(F(" Hours   RH   Temp"));
 //    lcd.setCursor(1, 3);
 //    lcd.print(prgFour[prgStep]);
 //    lcd.setCursor(9, 3);
@@ -151,12 +151,12 @@ void menuUseEvent(MenuUseEvent used)
 //    if (prgStep > 7) prgStep = 0;
 //    lcd.clear();
 //    lcd.setCursor(0, 0);
-//    lcd.print("Holding");
+//    lcd.print(F("Holding"));
 //    lcd.setCursor(0, 1);
-//    lcd.print("Step: ");
+//    lcd.print(F("Step: "));
 //    lcd.print(prgStep + 1);
 //    lcd.setCursor(0, 2);
-//    lcd.print(" Hours   RH   Temp");
+//    lcd.print(F(" Hours   RH   Temp"));
 //    lcd.setCursor(1, 3);
 //    lcd.print(prgFive[prgStep]);
 //    lcd.setCursor(9, 3);
@@ -168,12 +168,12 @@ void menuUseEvent(MenuUseEvent used)
   else if (used.item == versionI) {
     //userInput(11, 1);
     lcd.setCursor(0, 0);
-    lcd.print("Build ");
+    lcd.print(F("Build "));
     lcd.print(Version);
     lcd.setCursor(0, 2);
-    lcd.print("By Chris Davies");
+    lcd.print(F("By Chris Davies"));
     lcd.setCursor(0, 3);
-    lcd.print("siu07crd@gmail.com");
+    lcd.print(F("siu07crd@gmail.com"));
   }
   else if (used.item == prgHe) {
     menuFlag = 10;
@@ -737,9 +737,9 @@ void menuChangeEvent(MenuChangeEvent changed)
   Serial.println(changed.to.getName());
   if (changed.to.getName() == prgHe) {
     lcd.setCursor(0, 0);
-    lcd.print("PID settings");
+    lcd.print(F("PID settings"));
     lcd.setCursor(0, 2);
-    lcd.print("   P     I     D");
+    lcd.print(F("   P     I     D"));
     lcd.setCursor(2, 3);
     lcd.print(heKp);
     lcd.setCursor(8, 3);
@@ -749,9 +749,9 @@ void menuChangeEvent(MenuChangeEvent changed)
   }
   else if (changed.to.getName() == prgCo) {
     lcd.setCursor(0, 0);
-    lcd.print("PID settings");
+    lcd.print(F("PID settings"));
     lcd.setCursor(0, 2);
-    lcd.print("   P     I     D");
+    lcd.print(F("   P     I     D"));
     lcd.setCursor(2, 3);
     lcd.print(coKp);
     lcd.setCursor(8, 3);
@@ -761,9 +761,9 @@ void menuChangeEvent(MenuChangeEvent changed)
   }
   else if (changed.to.getName() == prgHu) {
     lcd.setCursor(0, 0);
-    lcd.print("PID settings");
+    lcd.print(F("PID settings"));
     lcd.setCursor(0, 2);
-    lcd.print("   P     I     D");
+    lcd.print(F("   P     I     D"));
     lcd.setCursor(2, 3);
     lcd.print(huKp);
     lcd.setCursor(8, 3);
@@ -773,9 +773,9 @@ void menuChangeEvent(MenuChangeEvent changed)
   }
   else if (changed.to.getName() == prgDe) {
     lcd.setCursor(0, 0);
-    lcd.print("PID settings");
+    lcd.print(F("PID settings"));
     lcd.setCursor(0, 2);
-    lcd.print("   P     I     D");
+    lcd.print(F("   P     I     D"));
     lcd.setCursor(2, 3);
     lcd.print(deKp);
     lcd.setCursor(8, 3);
@@ -800,71 +800,71 @@ void menuChangeEvent(MenuChangeEvent changed)
   }
   else if (changed.to.getName() == versionI) {
     lcd.setCursor(0, 0);
-    lcd.print("Build ");
+    lcd.print(F("Build "));
     lcd.print(Version);
     lcd.setCursor(0, 2);
-    lcd.print("By Chris Davies");
+    lcd.print(F("By Chris Davies"));
     lcd.setCursor(0, 3);
-    lcd.print("siu07crd@gmail.com");
+    lcd.print(F("siu07crd@gmail.com"));
   }
   else if (changed.to.getName() == Phe) {
     lcd.clear();
-    lcd.print("Heater P: ");
+    lcd.print(F("Heater P: "));
     lcd.print(heKp);
   }
   else if (changed.to.getName() == Ihe) {
     lcd.clear();
-    lcd.print("Heater I: ");
+    lcd.print(F("Heater I: "));
     lcd.print(heKi);
   }
   else if (changed.to.getName() == Dhe) {
     lcd.clear();
-    lcd.print("Heater D: ");
+    lcd.print(F("Heater D: "));
     lcd.print(heKd);
   }
   else if (changed.to.getName() == Pco) {
     lcd.clear();
-    lcd.print("Cooler P: ");
+    lcd.print(F("Cooler P: "));
     lcd.print(coKp);
   }
   else if (changed.to.getName() == Ico) {
     lcd.clear();
-    lcd.print("Cooler I: ");
+    lcd.print(F("Cooler I: "));
     lcd.print(coKi);
   }
   else if (changed.to.getName() == Dco) {
     lcd.clear();
-    lcd.print("Cooler D: ");
+    lcd.print(F("Cooler D: "));
     lcd.print(coKd);
   }
   else if (changed.to.getName() == Phu) {
     lcd.clear();
-    lcd.print("Humidifier P: ");
+    lcd.print(F("Humidifier P: "));
     lcd.print(huKp);
   }
   else if (changed.to.getName() == Ihu) {
     lcd.clear();
-    lcd.print("Humidifier I: ");
+    lcd.print(F("Humidifier I: "));
     lcd.print(huKi);
   }
   else if (changed.to.getName() == Dhu) {
     lcd.clear();
-    lcd.print("Humidifier D: ");
+    lcd.print(F("Humidifier D: "));
     lcd.print(huKd);
   }
   else if (changed.to.getName() == Pde) {
     lcd.clear();
-    lcd.print("Dehumidifier P: ");
+    lcd.print(F("Dehumidifier P: "));
     lcd.print(deKp);
   }
   else if (changed.to.getName() == Ide) {
     lcd.clear();
-    lcd.print("Dehumidifier I: ");
+    lcd.print(F("Dehumidifier I: "));
     lcd.print(deKi);
   }
   else if (changed.to.getName() == Dde) {
     lcd.clear();
-    lcd.print("Dehumidifier D: ");
+    lcd.print(F("Dehumidifier D: "));
     lcd.print(deKd);
   }
   else if (changed.to.getName() == hourSets11) {    //hours 1
