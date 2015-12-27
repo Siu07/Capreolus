@@ -1,3 +1,4 @@
+
 //https://github.com/Siu07/Capreolus/tree/master/Capreolus
 /*
 todo:
@@ -16,6 +17,7 @@ todo:
  Done 0%: Add autotune function on its own menu
  Done 0%: Remove all charcutire related names, make everything generic and allow ability to change names of PID controllers and programs
  Done 0%: Allow number of programs and number of steps to be adjustable
+ Done 0%: Add simple bang bang control when outside of close control (+-2c?) add menu option to overide PID.
  */
  /*
  EEPROM Memory Allocation:
@@ -51,7 +53,7 @@ todo:
   prgFourTemp  = 272
   prgFiveTemp  = 288
  */
-#include <MenuBackend.h>         //Menu element
+#include <MenuBackend.h>         //Menu element. version 1.4
 #include <LiquidCrystal.h>       //LCD 20x4
 #include <PID_v1.h>              //
 //#include <PID_AutoTune_v0.h>  // Hope to integrate, but not yet.
@@ -61,9 +63,9 @@ todo:
 #include <Bounce2.h>             //Cleaning User inputs
 #include <math.h>                //mapping numbers between differing scales
 
-char Version[] = "13/05/14";
+char Version[] = "27/12/15";
 
-boolean encoderChris = true;  //my encoder or davids. Make False before publish
+//boolean encoderChris = true;  //my encoder or davids. Make False before publish   //(What did i do with this code????)
 double bootFlag = 0;  //version number, increment if PID values are changed
 //rotary encoder & user inputs
 enum PinAssignments {
@@ -177,6 +179,8 @@ PID cooler(&coInput, &coOutput, &coSetpoint, coKp, coKi, coKd, REVERSE);
 PID humidifier(&huInput, &huOutput, &huSetpoint, huKp, huKi, huKd, DIRECT);
 PID dehumidifier(&deInput, &deOutput, &deSetpoint, deKp, deKi, deKd, REVERSE);
 //Menu  Elements
+void menuChangeEvent(MenuChangeEvent changed);
+void menuUseEvent(MenuUseEvent used);
 MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
   MenuItem snackSalami = MenuItem("Snack Salami");
     MenuItem runTime = MenuItem("Run");
@@ -456,10 +460,10 @@ void setup() {
   //Alarm.timerRepeat(61, timeSave);    //saves current run time for resume on power loss. In seconds
   programme = 0; //force boot to goto menu. Replace with EEPROMex
   prgStep = 0;  //
-  heater.SetSampleTime(1000);  //PID time between calculations in ms
-  cooler.SetSampleTime(1000);
-  humidifier.SetSampleTime(1000);
-  dehumidifier.SetSampleTime(1000);
+  heater.SetSampleTime(10000);  //PID time between calculations in ms
+  cooler.SetSampleTime(10000);
+  humidifier.SetSampleTime(10000);
+  dehumidifier.SetSampleTime(10000);
   //write if first boot
   if (EEPROM.readDouble(48) != bootFlag){ //bootFlag is a version number, if new version, update stored values
     EEPROM.updateDouble(0,heKp);  //populate values from defaults
@@ -727,7 +731,10 @@ double doubleMap(double in, double A, double B, double C, double D) {
   return out;
 }  
   
-void process() {
+void process() {    //ADD BANG BANG CONTROL HERE
+  //to do:
+  //after takeing readings find out if they're outside of close control range (+-2c/5%)
+  //if outside range, active bang bang control, if not continue with PID.
   totalTemp= totalTemp - readingsTemp[index];          
   readingsTemp[index] = analogRead(tempPin); 
   totalTemp= totalTemp + readingsTemp[index]; 
