@@ -1350,7 +1350,7 @@ void menuChangeEvent(MenuChangeEvent changed)
   
 }
 
-void menuSetup()    //not enough steps yet, only went up to 5 instead of 8, sigh. Also, cant have numbers before name. e.g. change "1hoursets" to "hoursets1"
+void menuSetup()
 {
   menu.getRoot().add(snackSalami);
     snackSalami.addAfter(saucionSec);

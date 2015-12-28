@@ -90,6 +90,8 @@ const int memBase = 350;
 int RH, Temp;
 int programme, prgStep, prgHour, prgMin, prgSec;
 double deadband = 0.5; //set the deadband to prevent PID controllers fighting.
+double TBand = 384.6;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
+double HBand = 245.52;  //(+-5%)Humidities +- this value from the target will switch control over to bang bang control
 int hours = 0, mins =0, secs = 0;
 int buttonState = 0;
 long t = 0;
@@ -746,14 +748,36 @@ void process() {    //ADD BANG BANG CONTROL HERE
   averageTemp = totalTemp / numReadings; 
   averageRH = totalRH / numReadings; 
   
-  heInput = averageTemp;//map(averageTemp, 0, 1023, -45.2142, 80);
+  heInput = averageTemp;//map(averageTemp, 0, 1023, -45.2142, 80); no need to map
   coInput = heInput;
   huInput = averageRH;//map(averageRH, 0, 1023, -25.2142, 100);
   deInput = huInput;
-  heater.Compute();
-  cooler.Compute();
-  humidifier.Compute();
-  dehumidifier.Compute();
+
+  if(heInput >= heSetpoint + TBand){  //if outside of close control, use bang bang control
+      heOutput = 0;
+      coOutput = 1023;
+  }
+  else if(heInput <= heSetpoint - TBand){
+      heOutput = 1023;
+      coOutput = 0;
+  }
+  else{
+    heater.Compute();
+    cooler.Compute();
+  }
+  if(huInput >= huSetpoint + HBand){
+      huOutput = 0;
+      deOutput = 1023;
+  }
+  else if(huInput <= huSetpoint - HBand){
+      huOutput = 1023;
+      deOutput = 0;
+  }
+  else{
+    humidifier.Compute();
+    dehumidifier.Compute();
+  }
+
   unsigned long now = millis();
   if(now - windowStartTime>windowSize){ //time to shift the Relay Window
     windowStartTime += windowSize;
@@ -763,7 +787,7 @@ void process() {    //ADD BANG BANG CONTROL HERE
   }
   else{
     digitalWrite(hePin,LOW); // 
-  }
+  }   
   analogWrite(coPin, coOutput); // 
   analogWrite(huPin, huOutput); // 
   analogWrite(dePin, deOutput); // 
