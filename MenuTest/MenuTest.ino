@@ -63,7 +63,7 @@ todo:
 #include <Bounce2.h>             //Cleaning User inputs
 #include <math.h>                //mapping numbers between differing scales
 
-char Version[] = "27/12/15";
+char Version[] = "28/12/15";
 //boolean encoderChris = true;  //my encoder or davids. Make False before publish   //(What did i do with this code????)
 double bootFlag = 0;  //version number, increment if PID values are changed
 //rotary encoder & user inputs
@@ -732,10 +732,7 @@ double doubleMap(double in, double A, double B, double C, double D) {
   return out;
 }  
   
-void process() {    //ADD BANG BANG CONTROL HERE
-  //to do:
-  //after takeing readings find out if they're outside of close control range (+-2c/5%)
-  //if outside range, active bang bang control, if not continue with PID.
+void process() {
   totalTemp= totalTemp - readingsTemp[index];          
   readingsTemp[index] = analogRead(tempPin); 
   totalTemp= totalTemp + readingsTemp[index]; 
