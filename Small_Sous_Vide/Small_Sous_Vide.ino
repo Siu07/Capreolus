@@ -47,7 +47,7 @@ long runTimer = 0;    //milli's since program start
 int windowSize = 10000;
 unsigned long windowStartTime;
 double heInput, heOutput, heSetpoint;
-double heKp = 0.5, heKi = 1, heKd = 1;
+double heKp = 1, heKi = 1, heKd = 1;
 
 PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT); 
 
@@ -66,12 +66,20 @@ void printscr() {
     lcd.print(F("Target: "));
     lcd.print(doubleMap(heSetpoint, 0, 1023, -45.2142, 80),2);
     lcd.setCursor(0, 2);
-    lcd.print(F("window: "));
-    lcd.print(heOutput);
-    lcd.print(F("/1023"));
+    lcd.print(F("Window: "));
+    lcd.print((heOutput/windowSize)*100);
+    lcd.print(F("%"));
     lcd.setCursor(0, 3);
+    lcd.print(F("Time:"));
+    lcd.setCursor(6, 3);
+    lcd.print(F("H:"));
+    lcd.print(hour(t));
+    lcd.setCursor(11, 3);
     lcd.print(F("M:"));
     lcd.print(minute(t));
+    lcd.setCursor(16, 3);
+    lcd.print(F("S:"));
+    lcd.print(second(t));
     Alarm.timerOnce(1, printscr);  //display every second when a program is running rather than make everything else pause
 }
   
