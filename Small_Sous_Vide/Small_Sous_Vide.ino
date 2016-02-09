@@ -65,6 +65,13 @@ void printscr() {
     lcd.setCursor(0, 1);
     lcd.print(F("Target: "));
     lcd.print(doubleMap(heSetpoint, 0, 1023, -45.2142, 80),2);
+    lcd.setCursor(0, 2);
+    lcd.print(F("window: "));
+    lcd.print(heOutput);
+    lcd.print(F("/1023"));
+    lcd.setCursor(0, 3);
+    lcd.print(F("M:"));
+    lcd.print(minute(t));
     Alarm.timerOnce(1, printscr);  //display every second when a program is running rather than make everything else pause
 }
   
