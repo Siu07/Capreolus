@@ -1,45 +1,36 @@
 #include <LiquidCrystal.h>       //LCD 20x4
-#include <PID_v1.h>              //
-//#include <Bounce2.h>             //Cleaning User inputs
+#include <PID_v1.h>              //Where the magic happens
 #include <math.h>                //mapping numbers between differing scales
 #include <DallasTemperature.h>   //Small temperature sensing module
 #include <OneWire.h>
 #include <Time.h>                //Counting from boot time
 #include <TimeAlarms.h>          //Basic multithreading
+#include <Bounce2.h>             //Deboounce inputs
 
 enum PinAssignments {
-  buttonPin = 20,    // Select
-  backButton = 22    // back
+  buttonPin = 2,    // Select
+  backButton = 3    // back
 };
 
+#define buttonPin 2
+#define backButton 3
+
+Bounce debouncer1 = Bounce(); 
+Bounce debouncer2 = Bounce(); 
 //Display
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 
 //PID
 int Temp;
-int programme, prgStep, prgHour, prgMin, prgSec;
-double deadband = 0.5; //set the deadband to prevent PID controllers fighting.
 double TBand = 384.6;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
 double tempTemp = 20;
-double hePrint;
 int hours = 0, mins =0, secs = 0;
-int buttonState = 0;
+//int buttonState = 0;
 long t = 0;
-
-//Averageing inputs Temperature
-const int numReadings = 10;
-double readingsTemp[numReadings];      // the readings from the analog input
-int index = 0;                  // the index of the current reading
-double totalTemp = 0;                  // the running total
-double averageTemp = 0;                // the average
 
 //Arduino hardware IO
 int tempPin = A0;    //Define input pins
 int hePin = 14;     //Define output pins
-
-//User Input
-//int lastDebounceTime = 0;  // the last time the output pin was toggled
-//int debounceDelay = 10;    // the debounce time; increase if the output flickers
 
 long runTimer = 0;    //milli's since program start
 
@@ -47,21 +38,20 @@ long runTimer = 0;    //milli's since program start
 int windowSize = 10000;
 unsigned long windowStartTime;
 double heInput, heOutput, heSetpoint;
-double heKp = 1, heKi = 0.5, heKd = 2;
+double heKp = 1, heKi = 1, heKd = 2;
 
 PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT); 
 
-#define ONE_WIRE_BUS 2
+#define ONE_WIRE_BUS 8
 OneWire ourWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&ourWire);
 
 void printscr() {
-  //Serial.println("printscreen");
     time_t t = now()- runTimer;
     //Print run time information every seconds whilst calculating PID
     lcd.setCursor(0, 0);
     lcd.print(F("Temp:"));
-    lcd.print(doubleMap(averageTemp, 0, 1023, -45.2142, 80),2);
+    lcd.print(doubleMap(heInput, 0, 1023, -45.2142, 80),2);
     lcd.setCursor(0, 1);
     lcd.print(F("Target: "));
     lcd.print(doubleMap(heSetpoint, 0, 1023, -45.2142, 80),2);
@@ -92,25 +82,12 @@ double doubleMap(double in, double A, double B, double C, double D) {
 void getTemp(){
  //returns the temperature from one DS18S20 in DEG Celsius
  sensors.requestTemperatures();
- tempTemp = doubleMap(sensors.getTempCByIndex(0), -45.2142, 80, 0, 1023);
- //hePrint = sensors.getTempCByIndex(0);
- //Serial.println(tempTemp);
- //return tempTemp;
- Alarm.timerOnce(5, getTemp);
+ heInput = doubleMap(sensors.getTempCByIndex(0), -45.2142, 80, 0, 1023);
+ process();
+ Alarm.timerOnce(1, getTemp);
 }
 
 void process() {
-//Serial.println("process");
-  totalTemp= totalTemp - readingsTemp[index];          
-  readingsTemp[index] = tempTemp;
-  totalTemp= totalTemp + readingsTemp[index]; 
-  index++;                    
-  if (index >= numReadings)              
-    index = 0;                           
-  averageTemp = totalTemp / numReadings; 
- Serial.println(averageTemp);
-  heInput = averageTemp; 
- 
   if(heInput >= heSetpoint + TBand){  //if outside of close control, use bang bang control
       heOutput = 0;
   }
@@ -120,8 +97,72 @@ void process() {
   else{
     heater.Compute();
   }
-  Serial.println(heOutput);
+  Serial.println(heOutput); 
+}
 
+void setup() {
+  Serial.begin(9600);
+  sensors.begin();
+  lcd.begin(20, 4);
+  //Timing                                                                                       
+  setTime(0,0,0,1,1,16); // set time to Saturday 0:00:00am Jan 1 2013   // setTime to be synced to RTC
+  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(backButton, INPUT_PULLUP);
+  pinMode(14, OUTPUT);    //Heater output is digital, not PWM
+  digitalWrite(buttonPin, HIGH);
+  digitalWrite(backButton, HIGH);
+   // encoder pin on interrupt 0 (pin 2)
+  attachInterrupt(0, doButtonPin, CHANGE);
+  // encoder pin on interrupt 1 (pin 3)
+  attachInterrupt(1, doBackButton, CHANGE);
+  debouncer1.attach(buttonPin);
+  debouncer1.interval(15); // interval in ms
+  debouncer2.attach(backButton);
+  debouncer2.interval(15); // interval in ms
+
+  //PID
+  windowStartTime = millis();
+  heater.SetOutputLimits(0, windowSize);
+  heater.SetMode(AUTOMATIC); //Should be AUTOMATIC, only manual during testing
+  //output RH and Temp values to PID and initilise
+  lcd.clear();
+  heSetpoint = 859.6;
+  heater.SetSampleTime(1000);  //PID time between calculations in ms
+  Alarm.timerOnce(1, getTemp);
+  delay(10);
+  Alarm.timerOnce(1, printscr);
+}
+
+void doButtonPin(){
+  debouncer1.update();
+  if (debouncer1.read() == HIGH){
+    debouncer1.update();
+    heSetpoint = heSetpoint + 2.0425;
+    lcd.setCursor(0, 1);
+    lcd.print(F("Target: "));
+    lcd.print(doubleMap(heSetpoint, 0, 1023, -45.2142, 80),2);
+  } 
+}
+
+void doBackButton(){
+  debouncer2.update();
+  if (debouncer2.read() == HIGH){
+    debouncer2.update();
+    heSetpoint = heSetpoint - 2.0425;
+    lcd.setCursor(0, 1);
+    lcd.print(F("Target: "));
+    lcd.print(doubleMap(heSetpoint, 0, 1023, -45.2142, 80),2);
+  }
+}
+
+void loop() {
+  Alarm.delay(10); // check if timer has expired
+//  if (digitalRead(buttonPin) == LOW){
+//    
+//  }
+//  else if (digitalRead(backButton) == LOW){
+//    
+//  }
   unsigned long now = millis();
   if(now - windowStartTime>windowSize){ //time to shift the Relay Window
     windowStartTime += windowSize;
@@ -131,56 +172,9 @@ void process() {
   }
   else{
     digitalWrite(hePin,LOW); // 
-  }   
-  
-}
-
-void setup() {
-  Serial.begin(9600);
-  //Serial.println("setup");
-  sensors.begin();
-  lcd.begin(20, 4);
-
-  //Timing                                                                                       
-   setTime(0,0,0,1,1,16); // set time to Saturday 0:00:00am Jan 1 2013   // setTime to be synced to RTC
-  //modes
-  pinMode(14, OUTPUT);    //Heater output is digital, not PWM
-    //rotary encoder
-  pinMode(buttonPin, INPUT);
-  pinMode(backButton, INPUT);
- // turn on pullup resistors
-  //digitalWrite(buttonPin, HIGH);
-  //digitalWrite(backButton, HIGH);
-  //PID
-  windowStartTime = millis();
-  heater.SetOutputLimits(0, windowSize);
-  heater.SetMode(AUTOMATIC); //Should be AUTOMATIC, only manual during testing
-
-  //output RH and Temp values to PID and initilise
-  lcd.clear();
-
-  for (int thisReading = 0; thisReading < numReadings; thisReading++)
-    readingsTemp[thisReading] = 0;  
-  heSetpoint = 900.45;
-  heater.SetSampleTime(5000);  //PID time between calculations in ms
-  Alarm.timerOnce(1, printscr);
-  Alarm.timerOnce(5, getTemp);
-}
-
-void loop() {
-  //Serial.println("loop");
-  process();
-  Alarm.delay(10); // check if timer has expired
-  if (digitalRead(buttonPin) == LOW){
-    //while (digitalRead(buttonPin) == LOW) delay(10);
-      heSetpoint = heSetpoint + 5;
-      printscr();
-  }
-  else if (digitalRead(backButton) == LOW){
-    //while (digitalRead(backButton) == LOW) delay(10);
-    heSetpoint = heSetpoint - 5;
-    printscr();
   }  
+  debouncer1.update();
+  debouncer2.update();
 }
 
 
