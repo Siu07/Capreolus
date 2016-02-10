@@ -47,7 +47,7 @@ long runTimer = 0;    //milli's since program start
 int windowSize = 10000;
 unsigned long windowStartTime;
 double heInput, heOutput, heSetpoint;
-double heKp = 1, heKi = 1, heKd = 1;
+double heKp = 1, heKi = 0.5, heKd = 2;
 
 PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT); 
 
