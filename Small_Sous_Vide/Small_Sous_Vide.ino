@@ -25,11 +25,9 @@ int Temp;
 double TBand = 384.6;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
 double tempTemp = 20;
 int hours = 0, mins =0, secs = 0;
-//int buttonState = 0;
 long t = 0;
 
 //Arduino hardware IO
-int tempPin = A0;    //Define input pins
 int hePin = 14;     //Define output pins
 
 long runTimer = 0;    //milli's since program start
@@ -39,6 +37,8 @@ int windowSize = 10000;
 unsigned long windowStartTime;
 double heInput, heOutput, heSetpoint;
 double heKp = 0.5, heKi = 2, heKd = 2;
+
+unsigned long serialTime; //this will help us know when to talk with processing
 
 PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT); 
 
@@ -97,7 +97,7 @@ void process() {
   else{
     heater.Compute();
   }
-  Serial.println(heOutput); 
+  //Serial.println(heOutput); 
 }
 
 void setup() {
@@ -126,7 +126,7 @@ void setup() {
   heater.SetMode(AUTOMATIC); //Should be AUTOMATIC, only manual during testing
   //output RH and Temp values to PID and initilise
   lcd.clear();
-  heSetpoint = 859.6;
+  heSetpoint = 696.2;//859.6;
   heater.SetSampleTime(1000);  //PID time between calculations in ms
   Alarm.timerOnce(1, getTemp);
   delay(10);
@@ -175,6 +175,113 @@ void loop() {
   }  
   debouncer1.update();
   debouncer2.update();
+
+  if(millis()>serialTime)
+  {
+    SerialReceive();
+    SerialSend();
+    serialTime+=500;
+  }
 }
 
+/********************************************
+ * Serial Communication functions / helpers
+ ********************************************/
 
+
+union {                // This Data structure lets
+  byte asBytes[24];    // us take the byte array
+  float asFloat[6];    // sent from processing and
+}                      // easily convert it to a
+foo;                   // float array
+
+
+
+// getting float values from processing into the arduino
+// was no small task.  the way this program does it is
+// as follows:
+//  * a float takes up 4 bytes.  in processing, convert
+//    the array of floats we want to send, into an array
+//    of bytes.
+//  * send the bytes to the arduino
+//  * use a data structure known as a union to convert
+//    the array of bytes back into an array of floats
+
+//  the bytes coming from the arduino follow the following
+//  format:
+//  0: 0=Manual, 1=Auto, else = ? error ?
+//  1: 0=Direct, 1=Reverse, else = ? error ?
+//  2-5: float setpoint
+//  6-9: float input
+//  10-13: float output  
+//  14-17: float P_Param
+//  18-21: float I_Param
+//  22-245: float D_Param
+void SerialReceive()
+{
+
+  // read the bytes sent from Processing
+  int index=0;
+  byte Auto_Man = -1;
+  byte Direct_Reverse = -1;
+  while(Serial.available()&&index<26)
+  {
+    if(index==0) Auto_Man = Serial.read();
+    else if(index==1) Direct_Reverse = Serial.read();
+    else foo.asBytes[index-2] = Serial.read();
+    index++;
+  } 
+  
+  // if the information we got was in the correct format, 
+  // read it into the system
+  if(index==26  && (Auto_Man==0 || Auto_Man==1)&& (Direct_Reverse==0 || Direct_Reverse==1))
+  {
+    heSetpoint=doubleMap(double(foo.asFloat[0]), -45.2142, 80, 0, 1023);
+    //Input=double(foo.asFloat[1]);       // * the user has the ability to send the 
+                                          //   value of "Input"  in most cases (as 
+                                          //   in this one) this is not needed.
+    if(Auto_Man==0)                       // * only change the output if we are in 
+    {                                     //   manual mode.  otherwise we'll get an
+      heOutput=double(foo.asFloat[2]);      //   output blip, then the controller will 
+    }                                     //   overwrite.
+    
+    double p, i, d;                       // * read in and set the controller tunings
+    p = double(foo.asFloat[3]);           //
+    i = double(foo.asFloat[4]);           //
+    d = double(foo.asFloat[5]);           //
+    heater.SetTunings(p, i, d);            //
+    
+    if(Auto_Man==0) heater.SetMode(MANUAL);// * set the controller mode
+    else heater.SetMode(AUTOMATIC);             //
+    
+    if(Direct_Reverse==0) heater.SetControllerDirection(DIRECT);// * set the controller Direction
+    else heater.SetControllerDirection(REVERSE);          //
+  }
+  Serial.flush();                         // * clear any random data from the serial buffer
+}
+
+// unlike our tiny microprocessor, the processing ap
+// has no problem converting strings into floats, so
+// we can just send strings.  much easier than getting
+// floats from processing to here no?
+void SerialSend()
+{
+  Serial.print("PID ");
+  Serial.print(doubleMap(heSetpoint, 0, 1023, -45.2142, 80));   
+  Serial.print(" ");
+  Serial.print(doubleMap(heInput, 0, 1023, -45.2142, 80));   
+  Serial.print(" ");
+  Serial.print(doubleMap(heOutput, 0, 10000, 0, 100));   
+  Serial.print(" ");
+  Serial.print(heater.GetKp());   
+  Serial.print(" ");
+  Serial.print(heater.GetKi());   
+  Serial.print(" ");
+  Serial.print(heater.GetKd());   
+  Serial.print(" ");
+  if(heater.GetMode()==AUTOMATIC) Serial.print("Automatic");
+  else Serial.print("Manual");  
+  Serial.print(" ");
+  if(heater.GetDirection()==DIRECT) Serial.println("Direct");
+  else Serial.println("Reverse");
+}
