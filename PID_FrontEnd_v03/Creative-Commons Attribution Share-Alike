@@ -1,0 +1,9 @@
+All credit to Brett Beauregard for PID front end.
+
+Source:
+http://playground.arduino.cc/Code/PIDLibrary
+http://brettbeauregard.com/blog/2009/05/graphical-front-end-for-the-arduino-pid-library/
+
+Minor changes for compatability with processing version 3.0 and customisation to fit my sketch (small sous vide).
+
+Creative-Commons Attribution Share-Alike licence
