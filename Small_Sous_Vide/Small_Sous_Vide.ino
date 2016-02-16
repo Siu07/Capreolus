@@ -1,3 +1,4 @@
+#include <PID_AutoTune_v0.h>
 #include <LiquidCrystal.h>       //LCD 20x4
 #include <PID_v1.h>              //Where the magic happens
 #include <math.h>                //mapping numbers between differing scales
@@ -22,10 +23,16 @@ LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 
 //PID
 int Temp;
-double TBand = 384.6;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
+double TBand = 8.17;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
 double tempTemp = 20;
 int hours = 0, mins =0, secs = 0;
 long t = 0;
+
+//Atune stuff
+byte ATuneModeRemember=2;
+boolean tuning = false;
+double aTuneStep=750, aTuneNoise=1, aTuneStartValue=750; //KP Set aTuneStep to ensure noticeable heating and cooling from aTuneStartValue
+unsigned int aTuneLookBack=200;
 
 //Arduino hardware IO
 int hePin = 14;     //Define output pins
@@ -36,11 +43,12 @@ long runTimer = 0;    //milli's since program start
 int windowSize = 10000;
 unsigned long windowStartTime;
 double heInput, heOutput, heSetpoint;
-double heKp = 0.5, heKi = 2, heKd = 2;
+double heKp = 1, heKi = 50, heKd = 10;
 
 unsigned long serialTime; //this will help us know when to talk with processing
 
 PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT); 
+PID_ATune aTune(&heInput, &heOutput);
 
 #define ONE_WIRE_BUS 8
 OneWire ourWire(ONE_WIRE_BUS);
@@ -92,7 +100,7 @@ void process() {
       heOutput = 0;
   }
   else if(heInput <= heSetpoint - TBand){
-      heOutput = 1023;
+      heOutput = windowSize;
   }
   else{
     heater.Compute();
@@ -126,7 +134,7 @@ void setup() {
   heater.SetMode(AUTOMATIC); //Should be AUTOMATIC, only manual during testing
   //output RH and Temp values to PID and initilise
   lcd.clear();
-  heSetpoint = 696.2;//859.6;
+  heSetpoint = 1063.85;//892.28;//859.6;//696.2;//
   heater.SetSampleTime(1000);  //PID time between calculations in ms
   Alarm.timerOnce(1, getTemp);
   delay(10);
@@ -223,18 +231,20 @@ void SerialReceive()
   // read the bytes sent from Processing
   int index=0;
   byte Auto_Man = -1;
-  byte Direct_Reverse = -1;
+  //byte Direct_Reverse = -1;
+  byte Tuning_Mode = -1; //KP Tuning Mode?
   while(Serial.available()&&index<26)
   {
     if(index==0) Auto_Man = Serial.read();
-    else if(index==1) Direct_Reverse = Serial.read();
+    //else if(index==1) Direct_Reverse = Serial.read();
+    else if(index==1) Tuning_Mode = Serial.read(); //KP Tuning Mode?
     else foo.asBytes[index-2] = Serial.read();
     index++;
   } 
   
   // if the information we got was in the correct format, 
   // read it into the system
-  if(index==26  && (Auto_Man==0 || Auto_Man==1)&& (Direct_Reverse==0 || Direct_Reverse==1))
+  if(index==26  && (Auto_Man==0 || Auto_Man==1)&& (Tuning_Mode==0 || Tuning_Mode==1))
   {
     heSetpoint=doubleMap(double(foo.asFloat[0]), -45.2142, 80, 0, 1023);
     //Input=double(foo.asFloat[1]);       // * the user has the ability to send the 
@@ -242,7 +252,7 @@ void SerialReceive()
                                           //   in this one) this is not needed.
     if(Auto_Man==0)                       // * only change the output if we are in 
     {                                     //   manual mode.  otherwise we'll get an
-      heOutput=double(foo.asFloat[2]);      //   output blip, then the controller will 
+      heOutput=doubleMap(double(foo.asFloat[2]), 0, 100, 0, windowSize);      //   output blip, then the controller will 
     }                                     //   overwrite.
     
     double p, i, d;                       // * read in and set the controller tunings
@@ -254,8 +264,10 @@ void SerialReceive()
     if(Auto_Man==0) heater.SetMode(MANUAL);// * set the controller mode
     else heater.SetMode(AUTOMATIC);             //
     
-    if(Direct_Reverse==0) heater.SetControllerDirection(DIRECT);// * set the controller Direction
-    else heater.SetControllerDirection(REVERSE);          //
+//    if(Direct_Reverse==0) heater.SetControllerDirection(DIRECT);// * set the controller Direction
+//    else heater.SetControllerDirection(REVERSE);          //
+    if(Tuning_Mode == 0) tuning=false; // Set Tuning mode on/off
+    else tuning=true;
   }
   Serial.flush();                         // * clear any random data from the serial buffer
 }
@@ -264,6 +276,35 @@ void SerialReceive()
 // has no problem converting strings into floats, so
 // we can just send strings.  much easier than getting
 // floats from processing to here no?
+
+void changeAutoTune()
+{
+ if(!tuning)
+  {
+    //Set the Output to the desired starting frequency.
+    aTuneStartValue = heOutput; //KP Initial aTuneStartValue will be = Output at Toggle
+    aTune.SetNoiseBand(aTuneNoise);
+    aTune.SetOutputStep(aTuneStep);
+    aTune.SetLookbackSec((int)aTuneLookBack);
+    AutoTuneHelper(true);
+    tuning = true;
+  }
+  else
+  { //cancel autotune
+    aTune.Cancel();
+    tuning = false;
+    AutoTuneHelper(false);
+  }
+}
+
+void AutoTuneHelper(boolean start)
+{
+  if(start)
+    ATuneModeRemember = heater.GetMode();
+  else
+    heater.SetMode(ATuneModeRemember);
+}
+
 void SerialSend()
 {
   Serial.print("PID ");
@@ -282,6 +323,8 @@ void SerialSend()
   if(heater.GetMode()==AUTOMATIC) Serial.print("Automatic");
   else Serial.print("Manual");  
   Serial.print(" ");
-  if(heater.GetDirection()==DIRECT) Serial.println("Direct");
-  else Serial.println("Reverse");
+//  if(heater.GetDirection()==DIRECT) Serial.println("Direct");
+//  else Serial.println("Reverse");
+  if(tuning==false) Serial.println("Off"); //KP Added the On/Off for Tuning Toggle
+  else Serial.println("On");
 }

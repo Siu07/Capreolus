@@ -90,8 +90,8 @@ const int memBase = 350;
 int RH, Temp;
 int programme, prgStep, prgHour, prgMin, prgSec;
 double deadband = 0.5; //set the deadband to prevent PID controllers fighting.
-double TBand = 384.6;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
-double HBand = 245.52;  //(+-5%)Humidities +- this value from the target will switch control over to bang bang control
+double TBand = 16.34;  //(+-2c) Temperature's +- this value from the target will switch control over to bang bang control
+double HBand = 40.85;  //(+-5%)Humidities +- this value from the target will switch control over to bang bang control
 int hours = 0, mins =0, secs = 0;
 int buttonState = 0;
 long t = 0;

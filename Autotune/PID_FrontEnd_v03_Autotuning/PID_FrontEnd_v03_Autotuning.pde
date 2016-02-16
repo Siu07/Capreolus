@@ -13,6 +13,10 @@
  * files and install instructions can be found at
  * http://www.sojamo.de/libraries/controlP5/
  * 
+ 
+ * February 2013
+ * Edited by Konstantine @Palanski to incorporate easier tuning.
+ * Edits and additions marked with //KP
  ********************************************************/
 
 import java.nio.ByteBuffer;
@@ -25,13 +29,13 @@ import controlP5.*;
 int windowWidth = 900;      // set the size of the 
 int windowHeight = 600;     // form
 
-float InScaleMin = 55;       // set the Y-Axis Min
+float InScaleMin = 40;       // set the Y-Axis Min
 float InScaleMax = 70;    // and Max for both
 float OutScaleMin = 0;      // the top and 
 float OutScaleMax = 100;    // bottom trends
 
 
-int windowSpan = 1200000;    // number of mS into the past you want to display
+int windowSpan = 600000;    // number of mS into the past you want to display
 int refreshRate = 100;      // how often you want the graph to be reDrawn;
 
 //float displayFactor = 1; //display Time as Milliseconds
@@ -73,10 +77,10 @@ boolean justSent = true;
 Serial myPort;
 
 ControlP5 controlP5;
-controlP5.Button AMButton, DRButton;
-controlP5.Textlabel AMLabel, AMCurrent, InLabel, 
+controlP5.Button AMButton, TuningButton;
+controlP5.Textlabel AMLabel, AMCurrent, InLabel, TuningLabel, TuningCurrent, 
 OutLabel, SPLabel, PLabel, 
-ILabel, DLabel,DRLabel, DRCurrent;
+ILabel, DLabel;
 controlP5.Textfield SPField, InField, OutField, 
 PField, IField, DField;
 
@@ -91,8 +95,6 @@ void setup()
 {
   frameRate(30);
   //size(windowWidth , windowHeight);
-  //fullScreen(1);
-  //size(900 , 600);
 
   println(Serial.list());                                           // * Initialize Serial
   myPort = new Serial(this, Serial.list()[0], 9600);                //   Communication with
@@ -115,9 +117,9 @@ void setup()
   PLabel=controlP5.addTextlabel("P","4",80,278);                    //
   ILabel=controlP5.addTextlabel("I","5",80,328);                    //
   DLabel=controlP5.addTextlabel("D","6",80,378);                    //
-  DRButton = controlP5.addButton("Toggle_DR",0.0,10,425,60,20);      //
-  DRLabel = controlP5.addTextlabel("DR","Direct",12,447);            //
-  DRCurrent = controlP5.addTextlabel("DRCurrent","Direct",80,440);   //
+  TuningButton = controlP5.addButton("Toggle_AT",0.0,10,425,60,20);      //
+  TuningLabel = controlP5.addTextlabel("AT","Off",12,447);            //
+  TuningCurrent = controlP5.addTextlabel("ATCurrent","Off",80,440);   //
 
   AxisFont = loadFont("axis.vlw");
   TitleFont = loadFont("Titles.vlw");
@@ -358,17 +360,19 @@ void Toggle_AM() {
   }
 }
 
-
-void Toggle_DR() {
-  if(DRLabel.getValueLabel().getText()=="Direct") 
+void Toggle_AT() { //KP Adding Toggle Tuning On/Off
+  if(TuningLabel.getValueLabel().getText()=="Off") 
   {
-    DRLabel.setValue("Reverse");
+    TuningLabel.setValue("On");
   }
   else
   {
-    DRLabel.setValue("Direct");   
+    TuningLabel.setValue("Off");   
   }
 }
+
+
+
 
 // Sending Floating point values to the arduino
 // is a huge pain.  if anyone knows an easier
@@ -389,9 +393,11 @@ void Send_To_Arduino()
   toSend[4] = float(IField.getText());
   toSend[5] = float(DField.getText());
   Byte a = (AMLabel.getValueLabel().getText()=="Manual")?(byte)0:(byte)1;
-  Byte d = (DRLabel.getValueLabel().getText()=="Direct")?(byte)0:(byte)1;
+ // Byte d = (DRLabel.getValueLabel().getText()=="Direct")?(byte)0:(byte)1;
+  Byte t = (TuningLabel.getValueLabel().getText() =="Off")?(byte)0:(byte)1; //KP Read On/Off state of Tuning Toggle, set t to correct value.
   myPort.write(a);
-  myPort.write(d);
+ // myPort.write(d);
+  myPort.write(t);
   myPort.write(floatArrayToByteArray(toSend));
   justSent=true;
 } 
@@ -417,11 +423,11 @@ byte[] floatArrayToByteArray(float[] input)
 //take the string the arduino sends us and parse it
 void serialEvent(Serial myPort)
 {
-  String read = myPort.readStringUntil(10);
+  String read = myPort.readStringUntil(10); //KP Read until carriage return (char(10))
   if(outputFileName!="") output.print(str(millis())+ " "+read);
   String[] s = split(read, " ");
 
-  if (s.length ==9)
+  if (s.length == 9) //KP Read to one more number
   {
     Setpoint = float(s[1]);           // * pull the information
     Input = float(s[2]);              //   we need out of the
@@ -433,7 +439,8 @@ void serialEvent(Serial myPort)
     ILabel.setValue(trim(s[5]));      //
     DLabel.setValue(trim(s[6]));      //
     AMCurrent.setValue(trim(s[7]));   //
-    DRCurrent.setValue(trim(s[8]));
+    //DRCurrent.setValue(trim(s[8]));
+    TuningCurrent.setValue(trim(s[8])); //KP Set Tuning Parameter
     if(justSent)                      // * if this is the first read
     {                                 //   since we sent values to 
       SPField.setText(trim(s[1]));    //   the arduino,  take the
@@ -443,9 +450,10 @@ void serialEvent(Serial myPort)
       IField.setText(trim(s[5]));     //
       DField.setText(trim(s[6]));     //
      // mode = trim(s[7]);              //
-      AMLabel.setValue(trim(s[7]));         //
+      AMLabel.setValue(trim(s[7]));        //
       //dr = trim(s[8]);                //
-      DRCurrent.setValue(trim(s[8]));         //
+     // DRCurrent.setValue(trim(s[8]));         //
+      TuningCurrent.setValue(trim(s[8])); //KP Set Tuning Parameter
       justSent=false;                 //
     }                                 //
 
