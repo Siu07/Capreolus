@@ -63,7 +63,7 @@ todo:
 #include <Bounce2.h>             //Cleaning User inputs
 #include <math.h>                //mapping numbers between differing scales
 
-char Version[] = "28/12/15";
+char Version[] = "16/01/16";
 //boolean encoderChris = true;  //my encoder or davids. Make False before publish   //(What did i do with this code????)
 double bootFlag = 0;  //version number, increment if PID values are changed
 //rotary encoder & user inputs
@@ -129,7 +129,7 @@ int prgOne[8] = {
 int prgOneRH[8] = {
   85, 90, 88, 85, 82, 80, 80, 80}; // Relative Humidity
 int prgOneTemp[8] = {
-  22, 23, 22, 20, 17, 14, 12, 10}; // Temperature
+  22, 23, 22, 20, 17, 14, 12, 13}; // Temperature
 // Programme Two - Saucison Sec
 int prgTwo[8] = {
   2, 48, 6, 6, 6, 12, 72, 144}; // Hours
@@ -157,7 +157,7 @@ int prgFive[8] = {
 int prgFiveRH[] = {
   80, 80, 80, 80, 80, 80, 80, 80}; // Relative Humidity
 int prgFiveTemp[8] = {
-  10, 10, 10, 10, 10, 10, 10, 10}; // Temperature
+  13, 13, 13, 13, 13, 13, 13, 13}; // Temperature
 
 long runTimer = 0;    //milli's since program start
 //heater                                      Define default PID parameters
