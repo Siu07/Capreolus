@@ -8,18 +8,18 @@
 #include <TimeAlarms.h>          //Basic multithreading
 #include <Bounce2.h>             //Deboounce inputs
 
-enum PinAssignments {
-  buttonPin = 2,    // Select
-  backButton = 3    // back
-};
+//enum PinAssignments {
+//  buttonPin = 2,    // Select
+//  backButton = 3    // back
+//};
 
-#define buttonPin 2
-#define backButton 3
+//#define buttonPin 2
+//#define backButton 3
 
 Bounce debouncer1 = Bounce(); 
 Bounce debouncer2 = Bounce(); 
 //Display
-LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
+LiquidCrystal lcd(10, 16, 14, 15, 18, 19);
 
 //PID
 int Temp;
@@ -35,7 +35,7 @@ double aTuneStep=750, aTuneNoise=1, aTuneStartValue=750; //KP Set aTuneStep to e
 unsigned int aTuneLookBack=200;
 
 //Arduino hardware IO
-int hePin = 14;     //Define output pins
+int hePin = 21;     //Define output pins
 
 long runTimer = 0;    //milli's since program start
 
@@ -43,14 +43,14 @@ long runTimer = 0;    //milli's since program start
 int windowSize = 10000;
 unsigned long windowStartTime;
 double heInput, heOutput, heSetpoint;
-double heKp = 1, heKi = 50, heKd = 10;
+double heKp = 1, heKi = 1, heKd = 0.1;
 
 unsigned long serialTime; //this will help us know when to talk with processing
 
 PID heater(&heInput, &heOutput, &heSetpoint, heKp, heKi, heKd, DIRECT); 
 PID_ATune aTune(&heInput, &heOutput);
 
-#define ONE_WIRE_BUS 8
+#define ONE_WIRE_BUS 20
 OneWire ourWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&ourWire);
 
@@ -116,7 +116,7 @@ void setup() {
   setTime(0,0,0,1,1,16); // set time to Saturday 0:00:00am Jan 1 2013   // setTime to be synced to RTC
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(backButton, INPUT_PULLUP);
-  pinMode(14, OUTPUT);    //Heater output is digital, not PWM
+  pinMode(21, OUTPUT);    //Heater output is digital, not PWM
   digitalWrite(buttonPin, HIGH);
   digitalWrite(backButton, HIGH);
    // encoder pin on interrupt 0 (pin 2)
