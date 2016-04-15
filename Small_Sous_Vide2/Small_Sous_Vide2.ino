@@ -1,8 +1,7 @@
 //-------------------------------------------------------------------
-//
 // Sous Vide Controller
 // Bill Earl - for Adafruit Industries
-// Edited by C.Davies
+// Edited by SIU07CRD
 //
 // Based on the Arduino PID and PID AutoTune Libraries 
 // by Brett Beauregard
@@ -19,6 +18,9 @@
 
 // So we can save and retrieve settings
 #include <EEPROM.h>
+
+//Menu Libary
+#include <MenuBackend.h>         //Menu element. version 1.4 by AlphaBeta
 
 // ************************************************
 // Pin definitions
@@ -115,8 +117,8 @@ long lastLogTime = 0;
 // ************************************************
 // States for state machine
 // ************************************************
-enum operatingState { OFF = 0, SETP, RUN, TUNE_P, TUNE_I, TUNE_D, AUTO};
-operatingState opState = OFF;
+enum operatingState { OFF = 0, RUN, TUNE_P, TUNE_I, TUNE_D, AUTO};
+operatingState opState = RUN;
 
 
 // ************************************************
@@ -132,6 +134,17 @@ DallasTemperature sensors(&oneWire);
 // arrays to hold device address
 DeviceAddress tempSensor;
 
+//Menu  Elements
+void menuChangeEvent(MenuChangeEvent changed);
+void menuUseEvent(MenuUseEvent used);
+MenuBackend menu = MenuBackend(menuUseEvent,menuChangeEvent);
+  MenuItem TurnOff = MenuItem("Off");
+    MenuItem DoRun = MenuItem("Run");
+    MenuItem DoAutotune = MenuItem("Autotune");
+    MenuItem DoTuneP = MenuItem("Tune P");
+    MenuItem DoTuneI = MenuItem("Tune I");
+    MenuItem DoTuneD = MenuItem("Tune D");
+    
 // ************************************************
 // Setup and diSplay initial screen
 // ************************************************
@@ -162,11 +175,10 @@ void setup()
   // encoder pin on interrupt 1 (pin 3)
   attachInterrupt(1, doEncoderB, CHANGE);
   
-   // Initialize LCD DiSplay 
+   // Initialize LCD Display 
    lcd.begin(16, 4);
    lcd.createChar(1, degree); // create degree symbol from the binary
    
-
    lcd.print(F("    Home"));
    lcd.setCursor(0, 1);
    lcd.print(F("   Sous Vide!"));
@@ -189,8 +201,22 @@ void setup()
 
    myPID.SetSampleTime(1000);
    myPID.SetOutputLimits(0, WindowSize);
-   opState = OFF;
-}
+   opState = RUN;
+  //Setup Menu
+   menu.getRoot().add(TurnOff);
+     TurnOff.addRight(DoRun);
+     DoRun.addAfter(DoAutotune);
+     DoAutotune.addAfter(DoTuneP);
+     DoTuneP.addAfter(DoTuneI);
+     DoTuneI.addAfter(DoTuneD);
+     DoTuneD.addAfter(DoRun);
+  
+     DoRun.addLeft(TurnOff);
+     DoAutotune.addLeft(TurnOff);
+     DoTuneP.addLeft(TurnOff);
+     DoTuneI.addLeft(TurnOff);
+     DoTuneD.addLeft(TurnOff);
+   }
 
 // ************************************************
 // Main Control Loop
@@ -199,18 +225,32 @@ void setup()
 // ************************************************
 void loop()
 {
-   // wait for button release before changing state
-   
-  /* need some sort of user input here to select what the pid is doing*/
-  
-   lcd.clear();
+  //See if any of the inputs have changed
+  if (encoderValue > lastEncoded){
+    rotating = true;
+    menu.moveDown();                //goto previous menu choice
+    lastEncoded = encoderValue;
+  }
+  else if (encoderValue < lastEncoded){
+    rotating = true;
+    menu.moveUp();                  //goto next menu choice
+    lastEncoded = encoderValue;
+  }
+  else if (digitalRead(buttonPin) == LOW){
+    while (digitalRead(buttonPin) == LOW) delay(10);  //hold code until input is done
+    menu.use();
+    menu.moveRight();               //Select next menu down or run action
+  }
+  else if (digitalRead(backButton) == LOW){
+    while (digitalRead(buttonPin) == LOW) delay(10);
+    menu.moveLeft();                //go back to previous menu
+  }
+ 
+   //lcd.clear();
    switch (opState)
    {
    case OFF:
       Off();
-      break;
-   case SETP:
-      Tune_Sp();
       break;
     case RUN:
       Run();
@@ -288,6 +328,10 @@ double EEPROM_readDouble(int address)
    }
    return value;
 }
+
+// ************************************************
+// Read Rotary Encoder inputs as interrupts
+// ************************************************
 void doEncoderA(){
   // debounce
   if ( rotating ) delay (20);  // wait a little until the bouncing is done
@@ -296,7 +340,6 @@ void doEncoderA(){
     A_set = !A_set;
       // adjust counter + if A leads B
     if ( A_set && !B_set )
-      //lastEncoded = encoderValue;
       encoderValue += 1;
       rotating = false;  // no more debouncing until loop() hits again
   }
@@ -309,7 +352,6 @@ void doEncoderB(){
     B_set = !B_set;
     //  adjust counter - 1 if B leads A
     if( B_set && !A_set ) 
-      //lastEncoded = encoderValue;
       encoderValue -= 1;
       rotating = false;
   }
@@ -371,23 +413,15 @@ void userInput(int menuFlag, float scale) { //Flag to interperate where its from
       switch (menuFlag) {  //case number, first digit: equipment type, second didgit: P,I or D
       case 1: 
         Setpoint = numInput;
-        //EEPROM.updateDouble(0,numInput);
-        //heater.SetTunings(numInput,heKi,heKd);// Heater Kp
         break;
       case 2: 
         Kp = numInput;
-        //EEPROM.updateDouble(0,numInput);
-        //heater.SetTunings(numInput,heKi,heKd);// Heater Kp
         break;
       case 3: 
         Ki = numInput;
-        //EEPROM.updateDouble(0,numInput);
-        //heater.SetTunings(numInput,heKi,heKd);// Heater Kp
         break;
       case 4: 
         Kd = numInput;
-        //EEPROM.updateDouble(0,numInput);
-        //heater.SetTunings(numInput,heKi,heKd);// Heater Kp
         break;
       default:
         break;
@@ -451,20 +485,15 @@ void DoControl()
 void Off()
 {
    myPID.SetMode(MANUAL);
-   //lcd.setBacklight(0);
    digitalWrite(RelayPin, LOW);  // make sure it is off
-   lcd.print(F("    Adafruit"));
-   lcd.setCursor(0, 1);
-   lcd.print(F("   Sous Vide!"));
-   //uint8_t buttons = 0;
-   while (digitalRead(backButton) == HIGH) delay(10);
-   // Prepare to transition to the RUN state
-   sensors.requestTemperatures(); // Start an asynchronous temperature reading
 
-   //turn the PID on
-   myPID.SetMode(AUTOMATIC);
-   windowStartTime = millis();
-   opState = RUN; // start control
+   //uint8_t buttons = 0;
+//   while (digitalRead(backButton) == HIGH){
+//    delay(10);
+//    //put menu here
+//   }
+
+   //while (digitalRead(backButton) == LOW) delay(10);
 }
 // ************************************************
 // Called by ISR every 15ms to drive the output
@@ -489,30 +518,10 @@ void DriveOutput()
 }
 
 // ************************************************
-// Setpoint Entry State
-// ************************************************
-void Tune_Sp()
-{
-    lcd.print(F("Set Temperature:"));
-    userInput(1, 0.5);
-    //if ((millis() - lastInput) > 3000)  // return to RUN after 3 seconds idle
-    //{
-       opState = RUN;
-       return;
-    //}
-    lcd.setCursor(0,1);
-    lcd.print(Setpoint);
-    lcd.print(" ");
-    DoControl();
-    DriveOutput();
-}
-
-// ************************************************
 // Proportional Tuning State
 // ************************************************
 void TuneP()
 {
-    lcd.print(F("Set Kp"));
     userInput(2, 10);
     //if ((millis() - lastInput) > 3000)  // return to RUN after 3 seconds idle
     //{
@@ -531,7 +540,6 @@ void TuneP()
 // ************************************************
 void TuneI()
 {
-    lcd.print(F("Set Ki"));
     userInput(3, 0.1);
     //if ((millis() - lastInput) > 3000)  // return to RUN after 3 seconds idle
     //{
@@ -550,7 +558,6 @@ void TuneI()
 // ************************************************
 void TuneD()
 {
-    lcd.print(F("Set Kd"));
     userInput(4, 0.1);
     //if ((millis() - lastInput) > 3000)  // return to RUN after 3 seconds idle
     //{
@@ -574,34 +581,40 @@ void TuneD()
 void Run()
 {
    // set up the LCD's number of rows and columns: 
-   lcd.print(F("Sp: "));
-   lcd.print(Setpoint);
-   lcd.write(1);
-   lcd.print(F("C : "));
-
    SaveParameters();
    myPID.SetTunings(Kp,Ki,Kd);
 
-   uint8_t buttons = 0;
-   while(true)
-   {
-      //setBacklight();  // set backlight based on state
-      if ((digitalRead(buttonPin) == LOW) && (digitalRead(backButton) == LOW) && (abs(Input - Setpoint) < 0.5)){  // Should be at steady-state
-      StartAutoTune();
-      }
-      else if (digitalRead(buttonPin) == LOW){
-        opState = SETP;
-        return;
+   //while(true)
+//   {
+//      //setBacklight();  // set backlight based on state
+//      if ((digitalRead(buttonPin) == LOW) && (digitalRead(backButton) == LOW) && (abs(Input - Setpoint) < 0.5)){  // Should be at steady-state
+//      StartAutoTune();
+//      }
+//      else if (digitalRead(buttonPin) == LOW){
+//        opState = SETP;
+//        return;
+//      }
+//      else if (digitalRead(backButton) == LOW){
+//        opState = OFF;
+//        return;
+//      }
+//    }
+      if (digitalRead(buttonPin) == LOW){
+        while (digitalRead(buttonPin) == LOW) delay(10);
+        userInput(1,0.25);
       }
       else if (digitalRead(backButton) == LOW){
+        while (digitalRead(backButton) == LOW) delay(10);
         opState = OFF;
-        return;
+        menu.moveUp();
+        menu.use();
       }
-    }
-      
       DoControl();
       DriveOutput();
-      
+      lcd.print(F("Sp: "));
+      lcd.print(Setpoint);
+      lcd.write(1);
+      lcd.print(F("C : "));
       lcd.setCursor(0,1);
       lcd.print(Input);
       lcd.write(1);
@@ -635,3 +648,92 @@ void Run()
 
     delay(100);
  }
+
+ void menuUseEvent(MenuUseEvent used)
+{
+  Serial.print(F("Menu use "));
+  Serial.println(used.item.getName());
+  if (used.item == TurnOff){
+    opState = OFF;
+    //Off();
+  }
+  else if (used.item == DoRun) {
+    opState = RUN;
+    // Prepare to transition to the RUN state
+    sensors.requestTemperatures(); // Start an asynchronous temperature reading
+   
+    //turn the PID on
+    myPID.SetMode(AUTOMATIC);
+    windowStartTime = millis();
+    opState = RUN; // start control
+    //Run();
+  }
+  else if (used.item == DoAutotune) {
+    // Prepare to transition to the RUN state
+    sensors.requestTemperatures(); // Start an asynchronous temperature reading
+   
+    //turn the PID on
+    myPID.SetMode(AUTOMATIC);
+    windowStartTime = millis();
+    opState = RUN; // start control
+    StartAutoTune();
+  }
+  else if (used.item == DoTuneP) {
+    // Prepare to transition to the RUN state
+    sensors.requestTemperatures(); // Start an asynchronous temperature reading
+   
+    //turn the PID on
+    myPID.SetMode(AUTOMATIC);
+    windowStartTime = millis();
+    opState = TUNE_P;
+    //TuneP();
+  }
+  else if (used.item == DoTuneI) {
+    // Prepare to transition to the RUN state
+    sensors.requestTemperatures(); // Start an asynchronous temperature reading
+   
+    //turn the PID on
+    myPID.SetMode(AUTOMATIC);
+    windowStartTime = millis();
+    opState = TUNE_I;
+    //TuneI();
+  }
+  else if (used.item == DoTuneD) {
+    // Prepare to transition to the RUN state
+    sensors.requestTemperatures(); // Start an asynchronous temperature reading
+   
+    //turn the PID on
+    myPID.SetMode(AUTOMATIC);
+    windowStartTime = millis();
+    opState = TUNE_D;
+    //TuneD();
+  }
+}
+
+void menuChangeEvent(MenuChangeEvent changed)
+{
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print(changed.to.getName());
+  Serial.println(changed.to.getName());
+  if (changed.to.getName() == TurnOff){
+    lcd.print(F("    Home"));
+    lcd.setCursor(0, 1);
+    lcd.print(F("   Sous Vide!"));
+  }
+  else if (changed.to.getName() == DoRun) {
+    lcd.print(F("Turn On"));
+  }
+  else if (changed.to.getName() == DoAutotune) {
+    lcd.print(F("Autotuning"));
+  }
+  else if (changed.to.getName() == DoTuneP) {
+    lcd.print(F("Set Kp"));
+  }
+  else if (changed.to.getName() == DoTuneI) {
+    lcd.print(F("Set Ki"));
+  }
+  else if (changed.to.getName() == DoTuneD) {
+    lcd.print(F("Set Kd"));
+  }
+}
