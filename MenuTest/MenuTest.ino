@@ -63,7 +63,7 @@ todo:
 #include <Bounce2.h>             //Cleaning User inputs
 #include <math.h>                //mapping numbers between differing scales
 
-char Version[] = "16/01/16";
+char Version[] = "31/01/17";
 //boolean encoderChris = true;  //my encoder or davids. Make False before publish   //(What did i do with this code????)
 double bootFlag = 0;  //version number, increment if PID values are changed
 //rotary encoder & user inputs
@@ -609,6 +609,7 @@ void loop() {
   else if (digitalRead(buttonPin) == LOW){
     while (digitalRead(buttonPin) == LOW) delay(10);
     if (calculating == false) {
+      prgStep = 0;
       menu.use();
       menu.moveRight();
     }
